@@ -1,0 +1,7 @@
+set line /dev/ttyp0
+set carrier off
+set speed 9600
+set parity none
+set flow none
+connect
+

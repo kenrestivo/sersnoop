@@ -12,6 +12,8 @@
 #include <kenmacros.h>
 
 
+#define MAXCOL 15
+
 
 /******************
 	STRIPUNREADABLES
@@ -36,6 +38,30 @@ stripUnreadables(char * dirty, char * clean, int len)
 	return 0;
 
 }/* END STRIPUNREADABLES */
+
+
+
+/******************
+	HEXDUMP
+	like the man says, dump the hex ;-)
+******************/
+static void
+hexDump(unsigned char * buf, int len)
+{
+	unsigned char * p = buf;
+
+	if(len > MAXCOL){
+		printf("\n\t\t");
+	}
+
+	while((p - buf) < len){
+		printf("%02x ", *p);
+		p++;
+	}
+
+	putchar('\n');
+
+}/* END HEXDUMP */
 
 
 
@@ -64,8 +90,11 @@ display(int sourcefd, char * buf, int len)
 		total = 0;
 	}
 
-	printf("%d:%d %s: (%d) <%.*s>\n", 
-		tv.tv_sec, tv.tv_usec, ttyname(sourcefd), len,  len, clean);
+	printf("%d:%d %s: (%d) <%.*s> ", 
+		(int)tv.tv_sec, (int)tv.tv_usec, 
+		ttyname(sourcefd), len,  len, clean);
+
+	hexDump(buf, len);
 
 	total += len;
 

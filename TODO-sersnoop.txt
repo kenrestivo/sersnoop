@@ -1,10 +1,15 @@
 TODO- serial snooper
 
-add in the decoding/printing
-	lift from xxd? ;-) at least read it
-
 ok, go for it: add in the network code! now i have something like net2tty
-	make the debug code optional? so i can run it as a daemon?
+	figure out the command-line options
+	roll in the code (should be easy)
+	test with standard terminal shit
+		btw read telnet rfc's
+
+make the debug code optional? so i can run it as a daemon?
+	essentially, make all the display.c shit DPRINTF level 1
+		and all the other diagnostics DPRINTF level 2+
+	finally, daemonize it.
 
 ----------------
 STUCK
@@ -14,6 +19,10 @@ should i be using O_NDELAY on tty when i'm using select/poll?? good idea?
 
 ----------------
 BELOW THE LINE
+
+	some way to keep track of hup's, pts's open/closed, tty's open/closed
+		i.e at least print an informative message
+		and when in network/daemon mode, connect only when pty opens
 
 	select/poll doesn't work with ptmx's on linux. wtf?
 		STUCK: find docs on devpts/ptmx interface on linux, and how it works
@@ -76,3 +85,7 @@ start the writing/reading.
 	some static var, who was talking last, so if it changes, i print that?
 		cool. but... the totals don't look quite yet
 			SOLUTION: sequence is important ;-)
+add in the decoding/printing
+	lift from xxd? ;-) at least read it
+		DONE. it's not perfect, or even nice, but it works
+
