@@ -1,7 +1,5 @@
 TODO- serial snooper
 
-add the index.html to this cvs, and generate teh readme automatically
-
 add ssl support. yeah, right.
 	STUCK: go get a local copy of the ssl docs and tutorials. duh.
 		start with a very basic connection

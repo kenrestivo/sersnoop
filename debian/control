@@ -8,7 +8,7 @@ Standards-Version: 3.5.2
 Package: sersnoop
 Architecture: any
 Depends: ${shlibs:Depends}
-Description: Monitors bytes passing between ptys, sockets, tty's
+Description: Sniffs bytes from tty's, pty's, and sockets
  serialsnoop is a simple command-line tool
  which echoes bytes to and from any 
  two serial ports, PTYs, or network sockets,

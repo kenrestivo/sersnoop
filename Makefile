@@ -79,7 +79,7 @@ sersnoop: $(sersnoop_OBJS) $(ssl_OBJS) $(sersnoop_HEADERS) README
 	$(CC) $(CFLAGS) $(LDFLAGS) $(SSLLDFLAGS) -o  $@ $(sersnoop_OBJS) $(ssl_OBJS)
 
 install: $(TARGETS)
-	install -c -m 755 sersnoop $(DESTDIR)/bin
+	install -c -m 755 sersnoop $(DESTDIR)/usr/bin/sersnoop
 
 README: readme.html
 	lynx -dump readme.html > README
@@ -118,6 +118,9 @@ flow:
 debug: sersnoop
 	@gdb ./sersnoop
 
+debianise: 
+	debuild
+
 dist: sersnoop
 	set -e; \
 	cd ..; \
@@ -128,9 +131,8 @@ dist: sersnoop
 			$(SRCDIR)/readme.html  \
 	; gzip -f9  $(PACKAGE)-$(REL).tar
 
-distinst: dist
+distinst: dist debianise
 	mv ../$(PACKAGE)-$(REL).tar.gz $(DISTDIR)
-	debuild
 	mv ../$(PACKAGE)_$(REL)* $(DISTDIR)
 	(cd $(DISTDIR) && \
 			rm -f $(PACKAGE)-current.tar.gz  ; \

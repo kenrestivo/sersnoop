@@ -62,8 +62,8 @@ manpage.1: manpage.sgml
     <cmdsynopsis>
       <command>&dhpackage;</command>
 
-      <arg><option>-a</option>device1</arg>
-      <arg><option>-b</option>device2</arg>
+      <arg><option>-a</option> device1</arg>
+      <arg><option>-b</option> device2</arg>
       <arg><option><replaceable>-d</replaceable></option></arg>
       <arg><option><replaceable>-p</replaceable></option></arg>
       <arg><option><replaceable>-D</replaceable></option></arg>
