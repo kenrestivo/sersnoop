@@ -52,17 +52,24 @@ struct fdstruct * gfds[3];  /* null-term array of structs. */
 	PARSEDEVICE
 	calls the relevant open functions
 	the open functions must parse out the : if need be
+	XXX this is the fucking ugliest hack i've ever written. 
+		and it's not just because of the gnu-style brace handling ;-)
+		find a proper, clean way of handling the SSL cases.
 ******************/
 struct fdstruct *
 parseDevice(char * path)
 {
-	/* CASE: tty */
-	if(*path == '/'){ 
+	/******** CASE: tty *******/
+	if(*path == '/')
+	{ 
 		return opentty(path);
 	} else if ( strncmp(path, "pty", 3) == 0 ){
 		return getPty(ptmx);
-	/* CASE: network server */
-	} else if (strchr(path,':') == NULL){ 
+
+	} 
+	/********* CASE: network server *******/
+	else if (strchr(path,':') == NULL)
+	{ 
 		if(path[strlen(path)-1] == 'S'){
 #ifdef USE_SSL
 			return openSSLServer(path);
@@ -74,8 +81,10 @@ parseDevice(char * path)
 		} else {
 			return openServer(path);
 		}
-	/* CASE network client */
-	} else { 
+	} 
+	/********CASE network client *******/
+	else 
+	{ 
 		if(path[strlen(path)-1] == 'S'){
 #ifdef USE_SSL
 			return openSSLSock(path);

@@ -22,12 +22,17 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#ifdef USE_SSL
+#include <openssl/ssl.h>
+#endif /* USE_SSL */
 
 /* TYPES */
 struct fdstruct {
 		int fd; /* the fd that has been open */
 		char * name; /* for the display function to use */
-		/* TODO: add ssl-related shit */
+#ifdef USE_SSL
+		SSL * ssl;
+#endif /* USE_SSL */
 };
 
 /* FUNCS */

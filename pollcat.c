@@ -82,6 +82,40 @@ static void removePfd(struct pollfd *pfds, int * pfdCount, int fd)
 	DPRINTF(1, "now %d fd's left\n", *pfdCount);
 } /* END REMOVEPFD */
 
+/******************
+    WRAPPEDWRITE
+    a very ugly function to wrap the error conditions around write
+    ok, it's overkill, since most of these packets are tiny, but whatever.
+******************/
+static int
+wrappedWrite(int fd, void * buf, size_t count)
+{
+    size_t off = 0;
+    size_t w = 0;
+
+    while(off < count){
+        w = write(fd, buf, count - off);
+        if(w > 0){
+            off += w;
+        } else {
+            switch(w){
+                case EINTR:
+                case EAGAIN: /* we're blocking, but you never know */
+                    DPRINTF(2, "write got interrupted at %d...\n", off);
+                    break;
+                case 0:
+                    DPRINTF(1, "broken pipe at %d...\n", off);
+                    return EPIPE;
+                    break;
+                default:
+                    return w; /* caller must error out */
+                    break;
+            } /* end swich */
+        }
+    }
+    return w; /* shouldn't happen */
+}/* END WRAPPEDWRITE */
+
 
 /******************
 	BCAST
@@ -96,9 +130,10 @@ bcast(char * buf, int len, int fromfd, struct pollfd * pfds, int numfds)
 		if(pfds[i].fd != fromfd){
 			DPRINTF(2, "bcast(): shouting out to my homey %s on fd %d\n",
 				lookupName(pfds[i].fd), pfds[i].fd);
-			/* XXX this might well fail if i don't have NDELAY. 
-					it might need to be in the loop, and that would suck. */
-			RETCALL(write(pfds[i].fd, buf, len));	
+				/* XXX  i can't check for POLLOUT here, i might lose data!
+					i may block here, waiting for write. that'd suck.  
+					oh well. */
+			RETCALL(wrappedWrite(pfds[i].fd, buf, len));	
 		}
 
 		i++;
@@ -111,7 +146,8 @@ bcast(char * buf, int len, int fromfd, struct pollfd * pfds, int numfds)
 /************************
 	PROCESSINPUT
 	cycles through the fd's with stuff on 'em, and prints it
-	RETURNS:  0 if ok, the fd number if it has closed, and negative number if error
+	RETURNS:  0 if ok, the fd number if it has closed, 
+			and negative number if error
 *************************/
 static int 
 processInput(struct pollfd * pfds, int numFds)
@@ -126,7 +162,8 @@ processInput(struct pollfd * pfds, int numFds)
 			continue;
 		}
 		if(pfds[i].revents & POLLIN ){
-			/* i can't while() here, or it all hangs. */
+			/* ok. i don't wrap reads here, because i don't care 
+				if i miss it, fuck it, i'll get it next time around */
 			rcount = read(pfds[i].fd, buf, sizeof(buf)) ;
 			if ( rcount > 0 ){
 				/* shout it to all the others */

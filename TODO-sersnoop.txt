@@ -1,35 +1,61 @@
 TODO- serial snooper
 
-add ssl support. yeah.
-	an sslsock file for opening the sockets
-		no big certificate checking
-	add the SSL structs to the fdstruct object
+add ssl support. yeah, right.
+	man ssl! it officially documents the api
+		read the online version with hyperlinks.
+	read soume source that uses ssl and poll/select
+		sslproxy simple shovel() function. i like. can i make use of it?
+		gabber!?
+		jabberd
+	open the ssl sockets
+		setup shit
+			library_init
+			then make ctx
+				first need to specify a method: i want SSLv23_method()
+					that does all 3: v2, v3, and tls1
+			set_options? SSL_OP_ALL (bug workarounds)
+			do i need all this certificate loading and password-callback shit?	
+			do i need to set the cipher list?
+			this is done ONCE per program. i need to make sure.
+		call my regular opensock stuff
+		set the modes on the fd (i.e. nonblocking if i use select)
+		create a new ssl object, and attach the open socket to it, set_fd
+		connect (or accept)		
+			check get_error, may have to redo it?
+		no big certificate checking. or just put in check_cert as a debug?
+		add the SSL structs to the fdstruct object
+		in server mode i'll have to load a cert. possibly client too if i present auth!
 	hellacious hacks to pollcat.c 
-		read-write. look in jabberd, gabber, stunnel, etc.
-		conditionalize it on USE_SSL
+		read-write. 
+			oh shit! i'll need to wrap my writes AND deal with ssl weirdness.
+			can SSL_want() make it easier? than writing and checknig errors?
+			or ssl_pending() for read ? as does the tutorial guy
+		conditionalize all this ugliness on USE_SSL, too, 
+				so it doesn't wreck non-ssl
+			could have a totally different poll loop, i.e. selectloop instead!
+		jabberd's mio.
+			wild. it assumes that all writes succeed, unless state != OK
+				then it accepts. 
+				i gues this means the connection is too new or reneg'ed
+			it assumes all reads succeed too, unless state != OK, 
+					whereit does accept
+				BUT! it checks retval from SSL_read, 
+					and returns it AND sets re-read flag
+					if the retval EQUALS the count. IIW, reads all-or-nothing?
+					
 
-add logging (well, duh, why didn't i think of this?)
-	although tee is JUST FINE too
+once and for all, set up a proper, robust CA, using wheelhouse's docs
+	SEP: ssh
 
-somehow include kenmacros.h in the distribution
+misc ?
+	do i need to check the alert strings?
 
-make the network socket code portable
-	autoconf 
+notes
+	der is asn.1 pem is base64 encoded standard cert.
+	nice. get_peer_cert_chain(), you can find out the other guy's chain
 
 ----------------
 STUCK
-
-make the debug code optional? so i can run it as a daemon?
-	essentially, make all the display.c shit DPRINTF level 1
-		and all the other diagnostics DPRINTF level 2+
-	finally, daemonize it. don't criticize it.
-		fork(), etc.
-	try it with sendfile? is it any faster/more responsive? if i don't need debug.
-
-fancy formatting. 
-	breaks after 8 bytes, in ascii. yes.
-		non-trivial. i'd have to do it in stripUnreadables, AND make sure there's extra bytes to cover it, meaning malloc, it's gettin ugly
-
 
 poll still returns with -1 data, if my pty went away
 	exception? or is that just for network sockets?
@@ -39,12 +65,24 @@ poll still returns with -1 data, if my pty went away
 if an fd goes away, in server mode, 
 	do i already re-listen it, and re-accept it
 	but, i need to re-add it to the pollcat shit.
+	add a void * to the fdstruct, and use it for newPfd(), pollLoop(), et al?
 
 SO_REUSEADDR in socket server
 
 ----------------
 BELOW THE LINE
 
+cool ssl shit
+	message_cb for debugging	
+	
+
+add logging (well, duh, why didn't i think of this?)
+	although tee is JUST FINE too
+
+somehow include kenmacros.h in the distribution
+
+make the network socket code portable
+	autoconf 
 possibly blow off all this command-line crap and use a conf file instead
 	use the gtk file-parsing library . look up the name of it in my c/notes/gtk
 
@@ -76,11 +114,23 @@ create a DIEUSAGE macro?
 
 hmm. how to grow/remove the fdstruct array?
 
-add a void * to the fdstruct, and use it for newPfd(), pollLoop(), et al
+
+make the debug code optional? so i can run it as a daemon?
+	essentially, make all the display.c shit DPRINTF level 1
+		and all the other diagnostics DPRINTF level 2+
+	finally, daemonize it. don't criticize it.
+		fork(), etc.
+	try it with sendfile? is it any faster/more responsive? if i don't need debug.
+
+fancy formatting. 
+	breaks after 8 bytes, in ascii. yes.
+		non-trivial. i'd have to do it in stripUnreadables, AND make sure there's extra bytes to cover it, meaning malloc, it's gettin ugly
 
 ----------------
 NOWHERE
 
+		docs sound simple: just use SSL_read/write! NOWHERE: they're WRONG
+		stunnel WAY too complicated
 	fix the polLoop so that it handles a read returning 0 by removing the fd!
 		perhaps it needs to remvoe the OPPOSITE side's fd? why is this broken?
 			didn't i already fix this?
@@ -254,3 +304,6 @@ fix the getopts: die if no args. DONE
 	some way to specify it on the command line
 		an "S" flag? this is getting goofy. DONE
 	some kind of conditional compliation? DONE. SSL=yes will build ssl
+	an sslsock file for opening the sockets DONE
+			do i need BIO? or can i just set_fd instead?
+				SOLUTION: i don't need BIO, if i use fd, the bio is automatically done
