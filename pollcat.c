@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <sys/poll.h>
 #include <kenmacros.h>
+#include "display.h"
 
 /* DEFS */
 #define POLLTIMEOUT 5
@@ -75,20 +76,22 @@ processInput(struct pollfd * pfds, int numFds)
 
 	for (i = 0; i < numFds; i++){
 		if(pfds[i].revents & POLLIN ){
-			/* TODO: this is already buffered by select, need stdio? */
+			/* XXX  should i while() here, or just grab one chunk and leave? */
 			while ( (rcount = read(pfds[i].fd, buf, sizeof(buf)) ) >0 ){
 				/* buncha UGLY debug stuff */
 				#ifdef __SVR4
 				DPRINTF(1, "got %d bytes from fd %d: ",
 					rcount, pfds[i].fd  );
 				#else
-				DPRINTF(1, "got %d bytes from fd %d, %s: ",
-					rcount, pfds[i].fd, ttyname(pfds[i].fd) );
+				RETCALL(display( ttyname(pfds[i].fd), buf, rcount) );
 				#endif /* __SVR4 */
 
-				RETCALL(write(1, buf, rcount) );
-
 			} /* end while */
+#if 0
+			if(rcount < 0){
+				perror("read error in poll:processInput\n");
+			}
+#endif
 		} /* end if */
 	} /* end for */
 	return 0;
