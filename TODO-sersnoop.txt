@@ -1,12 +1,7 @@
 TODO- serial snooper
 
 ok, go for it: add in the network code! now i have something like net2tty
-	parse out the device line
-	regression testing
-	test with standard terminal shit
-		btw read telnet rfc's
-
-create a DIEUSAGE macro
+	test with the actual camera! this be it...
 
 make the debug code optional? so i can run it as a daemon?
 	essentially, make all the display.c shit DPRINTF level 1
@@ -16,15 +11,22 @@ make the debug code optional? so i can run it as a daemon?
 ----------------
 STUCK
 
+hmm. some way to glean the socket host/port from an fd/sd?
+	STUCK: read docs, socket faq, etc
+
+server mode! oh shit, how to do that?
+
 should i be using O_NDELAY on tty when i'm using select/poll?? good idea?
 	STUCK: read up on this
 
 ----------------
 BELOW THE LINE
 
-	some way to keep track of hup's, pts's open/closed, tty's open/closed
-		i.e at least print an informative message
-		and when in network/daemon mode, connect only when pty opens
+	wow! if the cable is present, i get an 0x07 back... is that predictable?
+		could be a good way to tell what's going on!
+
+	and when in network/daemon mode, connect only when pty opens
+		could require significant reshuffling. opens are in main right now... 
 
 	select/poll doesn't work with ptmx's on linux. wtf?
 		STUCK: find docs on devpts/ptmx interface on linux, and how it works
@@ -33,9 +35,22 @@ BELOW THE LINE
 	try termtest on netbsd
 		STUCK: need to fix some of the includes/ifdefs/defines
 
+expand to make it handle more than two
+	change the command line parsing instead of -a -b, just put them as optind's
+		i.e after all the dash options are done!
+	either create multi-versions (array?) of the twoxxx functions, or expose them
+	fix the polLoop so that it handles a read returning 0 by removing the fd!
+		perhaps it needs to remvoe the OPPOSITE side's fd? why is this broken?
+
+
+create a DIEUSAGE macro?
+
 ----------------
 NOWHERE
 
+	test with standard terminal shit
+		btw read telnet rfc's
+		NOWHERE: need server shit: 
 deal with the writing now.
 	shall i select for write? hmm... could get tricky...
 		NOWHERE: not needed, i don't think
@@ -97,3 +112,14 @@ figure out the command-line options
 			grab code from chotplay DONE
 	roll in the code (should be easy) DONE
 	
+	parse out the device line DONE
+	regression testing DONE. 'tworks
+	some way to keep track of hup's, pts's open/closed, tty's open/closed
+		i.e at least print an informative message
+			DONE! READ 0 if socket closed
+that weird network read = 0 shit?
+	can i exit if i get a read of 0? DONE
+	why it dooo dat? socket closed? term server hung up?
+		SOLUTION: assume so.
+
+	test with bogus/safe terminal SERVER DONE. it works

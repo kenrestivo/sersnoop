@@ -76,7 +76,7 @@ bcast(char * buf, int len, int fromfd, struct pollfd * pfds, int numfds)
 			DPRINTF(2, "bcast(): shouting out to my homey %s on fd %d\n",
 				ttyname(pfds[i].fd), pfds[i].fd);
 			/* XXX this might well fail if i don't have NDELAY. 
-					it might need to be in loop. */
+					it might need to be in the loop, and that would suck. */
 			RETCALL(write(pfds[i].fd, buf, len));	
 		}
 
@@ -90,7 +90,7 @@ bcast(char * buf, int len, int fromfd, struct pollfd * pfds, int numfds)
 /************************
 	PROCESSINPUT
 	cycles through the fd's with stuff on 'em, and prints it
-	RETURNS:  negative number if error
+	RETURNS:  0 if ok, the fd number if it has closed, and negative number if error
 *************************/
 static int 
 processInput(struct pollfd * pfds, int numFds)
@@ -112,8 +112,10 @@ processInput(struct pollfd * pfds, int numFds)
 
 			} else if (rcount < 0 ) {
 				perror("read error in poll:processInput\n");
+				return -1;
 			} else {
-				DPRINTF(1, "processInput(): wtf? read of 0?\n");
+				DPRINTF(1, "processInput(): connection closed by peer\n");
+				return 1;
 			}
 		} /* end if */
 	} /* end for */
@@ -132,18 +134,28 @@ static int
 pollLoop(struct pollfd * pfds, int pfdCount)
 {
 	nfds_t foundCount; /* don't be scared, it's just a uint */
+	int res = 0;
 
 	DPRINTF(1, "pollLoop(): starting poll loop with total of %d fd's\n", pfdCount);
 
-	while(shutdownFlag == 0){
+	while(pfdCount > 0){
+		if(shutdownFlag != 0){
+			return(0);
+		}
 		SYSCALL(foundCount = poll(pfds, pfdCount, INFTIM));
 		assert(foundCount > 0); /* with INFTIM, should neer have 0 */
 
-		processInput(pfds, pfdCount);
+		RETCALL(res = processInput(pfds, pfdCount));
+		if(res > 0){
+			DPRINTF(1, "pollLoop(): connection %s closed on %d\n", 
+					ttyname(res), res);
+			/* XXX shoudl be? removePfd(pfds, &pfdCount, res); */
+			return(-1);
+		}
 
 	} /* end while */
 
-	return (0);
+	return (0); /* all done! */
 	
 }/* END POLLOOP  */
 

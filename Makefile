@@ -38,13 +38,16 @@ sersnoop: $(sersnoop_OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o  $@ $(sersnoop_OBJS)
 
 test: sersnoop
-	./sersnoop -a/dev/ttyS0:9600 -b pty
+	./sersnoop -a/dev/ttyS1:38400 -b pty
 
 safetest: sersnoop
 	./sersnoop  -a/dev/ttyS0:9600 -b pty
 
+netsafe: sersnoop
+	./sersnoop  -a pty -b ts:23
+
 selecttest: sersnoop
-	./sersnoop -s -a/dev/ttyS0:9600 -b pty
+	./sersnoop -s -a/dev/ttyS1:38400 -b pty
 
 debug: sersnoop
 	@gdb ./sersnoop
