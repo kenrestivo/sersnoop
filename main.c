@@ -13,6 +13,7 @@
 #include "pollcat.h"
 #include "serttys.h"
 #include "serptys.h"
+#include "sig.h"
 
 /* GLOBS */
 int debug = 1;
@@ -29,6 +30,9 @@ main(int argc, char ** argv)
 	int ptfd = -1;	
 	int ttyfd = -1;	
 	int rv = 0;
+
+	/* oh, why not */
+	signalSetup();
 
 	/* open the local pty */
 	/* XXX fucked 
