@@ -20,7 +20,7 @@ endif
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
-	# Add here commands to configure the package.
+	# no configuration needed
 
 	touch configure-stamp
 
@@ -29,21 +29,15 @@ build: build-stamp
 
 build-stamp: configure-stamp 
 	dh_testdir
-
-	# Add here commands to compile the package.
 	$(MAKE)
-	#/usr/bin/docbook-to-man debian/sersnoop.sgml > sersnoop.1
-
+	/usr/bin/docbook-to-man debian/sersnoop.sgml > sersnoop.1
 	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp configure-stamp
-
-	# Add here commands to clean up after the build process.
 	-$(MAKE) clean
-
 	dh_clean
 
 install: build
@@ -51,8 +45,6 @@ install: build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
-
-	# Add here commands to install the package into debian/sersnoop.
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/sersnoop
 
 
@@ -67,13 +59,6 @@ binary-arch: build install
 #	dh_installdebconf	
 	dh_installdocs
 	dh_installexamples
-	dh_installmenu
-#	dh_installlogrotate
-#	dh_installemacsen
-#	dh_installpam
-#	dh_installmime
-#	dh_installinit
-	dh_installcron
 	dh_installman
 	dh_installinfo
 #	dh_undocumented
@@ -82,9 +67,7 @@ binary-arch: build install
 	dh_strip
 	dh_compress
 	dh_fixperms
-#	dh_makeshlibs
 	dh_installdeb
-#	dh_perl
 	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums

@@ -29,7 +29,9 @@ KENINCL=/mnt/kens/ki/is/c/kenincl
 
 #build stuff
 TARGETS= sersnoop
-CFLAGS:= -g -Wall  -O3  -I/lib/modules/`uname -r`/build/include -I$(KENINCL) -DREL=\"$(REL)\"
+CFLAGS:= -g -Wall  -O3  -I/lib/modules/`uname -r`/build/include \
+	-I$(KENINCL) -DREL=\"$(REL)\"
+
 sersnoop_OBJS:= main.o \
 				pollcat.o \
 				serttys.o \

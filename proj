@@ -21,10 +21,16 @@
 KENCLOC=/mnt/kens/ki/is/c
 
 FILES=" 
-		TO* \
-		*.[ch] \
-		Makefile \
-		proj \
+		TO* 
+		*.[ch] 
+		Makefile 
+		proj 
+		debian/rules 
+		debian/changelog
+		debian/control
+		debian/dirs
+		debian/docs
+		debian/sersnoop.sgml
 "
 
 OPTIONALS="

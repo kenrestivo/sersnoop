@@ -1,5 +1,14 @@
 TODO- serial snooper
 
+debianize it. don't critizize it.
+	handle the install target
+	fix fucked up things
+	build/test/install
+	commit it!
+	publish it, in various places
+
+add the index.html to this cvs, and generate teh readme automatically
+
 add ssl support. yeah, right.
 	STUCK: go get a local copy of the ssl docs and tutorials. duh.
 		start with a very basic connection
@@ -45,10 +54,6 @@ add ssl support. yeah, right.
 					and returns it AND sets re-read flag
 					if the retval EQUALS the count. IIW, reads all-or-nothing?
 					
-debianize it. don't critizize it.
-	dh-make
-		figure out how to make it expect a "native" package
-	have yet another look at giFT
 
 
 once and for all, set up a proper, robust CA, using wheelhouse's docs
@@ -335,3 +340,9 @@ asprintf was totally fucked
 		read the online version with hyperlinks. IT ROCKS!
 	hmm. should i use bio's? so i can read/write bytes not records?
 		DONE. set_fd does this
+	dh-make
+		figure out how to make it expect a "native" package
+			DONE --native. heh
+	have yet another look at giFT DONE
+	write a man page!
+		doc2man DONE

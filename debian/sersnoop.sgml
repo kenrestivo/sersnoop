@@ -17,16 +17,16 @@ manpage.1: manpage.sgml
   -->
 
   <!-- Fill in your name for FIRSTNAME and SURNAME. -->
-  <!ENTITY dhfirstname "<firstname>FIRSTNAME</firstname>">
-  <!ENTITY dhsurname   "<surname>SURNAME</surname>">
+  <!ENTITY dhfirstname "<firstname>ken</firstname>">
+  <!ENTITY dhsurname   "<surname>restivo</surname>">
   <!-- Please adjust the date whenever revising the manpage. -->
   <!ENTITY dhdate      "<date>June 17, 2003</date>">
   <!-- SECTION should be 1-8, maybe w/ subsection other parameters are
        allowed: see man(7), man(1). -->
-  <!ENTITY dhsection   "<manvolnum>SECTION</manvolnum>">
+  <!ENTITY dhsection   "<manvolnum>1</manvolnum>">
   <!ENTITY dhemail     "<email>ken@restivo.org</email>">
   <!ENTITY dhusername  "ken restivo">
-  <!ENTITY dhucpackage "<refentrytitle>SERSNOOP</refentrytitle>">
+  <!ENTITY dhucpackage "<refentrytitle>sersnoop</refentrytitle>">
   <!ENTITY dhpackage   "sersnoop">
 
   <!ENTITY debian      "<productname>Debian</productname>">
@@ -43,7 +43,7 @@ manpage.1: manpage.sgml
       &dhsurname;
     </author>
     <copyright>
-      <year>2001</year>
+      <year>2003</year>
       <holder>&dhusername;</holder>
     </copyright>
     &dhdate;
@@ -56,68 +56,111 @@ manpage.1: manpage.sgml
   <refnamediv>
     <refname>&dhpackage;</refname>
 
-    <refpurpose>program to do something</refpurpose>
+    <refpurpose>echoes and displays traffic from sockets, pty's, ttys</refpurpose>
   </refnamediv>
   <refsynopsisdiv>
     <cmdsynopsis>
       <command>&dhpackage;</command>
 
-      <arg><option>-e <replaceable>this</replaceable></option></arg>
+      <arg><option>-a</option>device1</arg>
+      <arg><option>-b</option>device2</arg>
+      <arg><option><replaceable>-d</replaceable></option></arg>
+      <arg><option><replaceable>-p</replaceable></option></arg>
+      <arg><option><replaceable>-D</replaceable></option></arg>
+      <arg><option><replaceable>-s</replaceable></option></arg>
+      <arg><option><replaceable>-h</replaceable></option></arg>
 
-      <arg><option>--example <replaceable>that</replaceable></option></arg>
     </cmdsynopsis>
   </refsynopsisdiv>
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para>This manual page documents briefly the
-      <command>&dhpackage;</command> and <command>bar</command>
-      commands.</para>
-
-    <para>This manual page was written for the &debian; distribution
-      because the original program does not have a manual page.
-      Instead, it has documentation in the &gnu;
-      <application>Info</application> format; see below.</para>
-
-    <para><command>&dhpackage;</command> is a program that...</para>
+    <para><command>&dhpackage;</command> is a simple command-line tool for Linux that echoes bytes to and from any
+   two serial ports, ptys, or network sockets, and prints all traffic to
+   stdout, in hex and ascii. You can mix and match any combination of serial ports, pty's, or sockets. sersnoop can either listen on sockets, or connect to sockets, or both.
+</para>
 
   </refsect1>
   <refsect1>
     <title>OPTIONS</title>
 
-    <para>These programs follow the usual GNU command line syntax,
-      with long options starting with two dashes (`-').  A summary of
-      options is included below.  For a complete description, see the
-      <application>Info</application> files.</para>
+    <para>These programs follow the usual *nix command line syntax.
+	A summary of options is included below.  
+      </para>
 
     <variablelist>
+
       <varlistentry>
-        <term><option>-h</option>
-          <option>--help</option>
-        </term>
+        <term><option>-h</option> </term>
         <listitem>
           <para>Show summary of options.</para>
         </listitem>
       </varlistentry>
+
+
       <varlistentry>
-        <term><option>-v</option>
-          <option>--version</option>
-        </term>
+        <term><option>-a</option> </term>
         <listitem>
-          <para>Show version of program.</para>
+          <para>first device (default /dev/ttyS1:38400). See OPTIONS below.
+			</para>
         </listitem>
       </varlistentry>
+
+      <varlistentry>
+        <term><option>-b</option> </term>
+        <listitem>
+          <para>second device (default pty). See OPTIONS below.
+		</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-d</option> </term>
+        <listitem>
+          <para>debug level
+		</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-p</option> </term>
+        <listitem>
+          <para>use ptmx. NOTE: this is broken. Don't use it.
+		</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-s</option> </term>
+        <listitem>
+          <para>try it with select not poll (for debugging)
+		</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-D</option> </term>
+        <listitem>
+          <para>just test out the hexdump display format (for debug)
+		</para>
+        </listitem>
+      </varlistentry>
+
+
     </variablelist>
   </refsect1>
+
   <refsect1>
-    <title>SEE ALSO</title>
+    <title>OPTIONS</title>
+         <para>Either or both devices can be:</para>
+                <para>(host:port) or (ipaddr:port) for client (or (host:port)S for SSL-based client)</para>
+                <para>(port) for server (or (port)S for SSL-based server</para>
+                <para>(/abs/path/to/ttyname:baud>, for tty or (pty) (it'll pick a pty for you)</para>
 
-    <para>bar (1), baz (1).</para>
-
-    <para>The programs are documented fully by <citetitle>The Rise and
-      Fall of a Fooish Bar</citetitle> available via the
-      <application>Info</application> system.</para>
   </refsect1>
+
+
+
   <refsect1>
     <title>AUTHOR</title>
 

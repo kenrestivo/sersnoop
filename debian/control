@@ -1,12 +1,15 @@
 Source: sersnoop
-Section: unknown
+Section: devel
 Priority: optional
 Maintainer: ken restivo <ken@restivo.org>
-Build-Depends: debhelper (>> 3.0.0)
+Build-Depends: debhelper (>> 3.0.0), docbook-utils
 Standards-Version: 3.5.2
 
 Package: sersnoop
 Architecture: any
 Depends: ${shlibs:Depends}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Description: Monitors bytes passing between ptys, sockets, tty's
+ serialsnoop is a simple command-line tool
+ which echoes bytes to and from any 
+ two serial ports, PTYs, or network sockets,
+ and displays all traffic to stdout in hex and ASCII
