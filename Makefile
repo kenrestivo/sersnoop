@@ -30,20 +30,50 @@ KENINCL=/mnt/kens/ki/is/c/kenincl
 #build stuff
 TARGETS= sersnoop
 CFLAGS:= -g -Wall  -O3  -I/lib/modules/`uname -r`/build/include -I$(KENINCL) -DREL=\"$(REL)\"
-sersnoop_OBJS:= main.o pollcat.o serttys.o serptys.o sig.o selectloop.o \
-				display.o sock.o util.o common.o
-sersnoop_HEADERS:= common.h Makefile
+sersnoop_OBJS:= main.o \
+				pollcat.o \
+				serttys.o \
+				serptys.o \
+				sig.o \
+				selectloop.o \
+				display.o \
+				sock.o \
+				util.o \
+				common.o
 
-#
+sersnoop_HEADERS:= 	pollcat.h \
+					serttys.h \
+					serptys.h \
+					sig.h \
+					selectloop.h \
+					display.h \
+					sock.h \
+					util.h \
+					common.h \
+					Makefile
+
+#a gnuism TODO: replace this with proper autoconf shit
+ifdef SSL
+	ssl_OBJS:=sslsock.o
+	SSLCFLAGS:=-DUSE_SSL
+	SSLLDFLAGS:=-lssl -lcrypto
+endif
+
+# so i can get ssl cflags in there
+
+%.o:%.c
+	$(CC) $(CFLAGS) $(SSLCFLAGS) -c $< 
+
+# 
 
 
 all: $(TARGETS)
 
 clean::
-	rm -f $(TARGETS) $(sersnoop_OBJS) core
+	rm -f $(TARGETS) $(sersnoop_OBJS) $(ssl_OBJS) core
 
-sersnoop: $(sersnoop_OBJS) $(sersnoop_HEADERS)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o  $@ $(sersnoop_OBJS)
+sersnoop: $(sersnoop_OBJS) $(ssl_OBJS) $(sersnoop_HEADERS)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(SSLLDFLAGS) -o  $@ $(sersnoop_OBJS) $(ssl_OBJS)
 
 #test targets
 
