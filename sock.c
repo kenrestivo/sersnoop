@@ -87,7 +87,8 @@ openServer(char * path)
 
 	SYSCALL(getpeername(ad, &peerSa, &peerLen));
 	DPRINTF(1, "got connection from %s on %d\n", 
-		inet_ntoa(peerSa.sin_addr.s_addr), ntohs(peerSa.sin_port));
+		inet_ntoa(peerSa.sin_addr.s_addr), 
+		ntohs(peerSa.sin_port));
 
 	/* TODO: rip the gethostbyaddr() stuff from my old gethostfun program  */
 
