@@ -70,7 +70,7 @@ int
 printLine(unsigned char * linebuf, int linelen, int mainpos)
 {
 	char posfmt[]= "\n    0x%0.4x: "; /* maximum 65535 before rolling over */
-	char bytefmt[] = "%02x%02x ";
+	char bytefmt[] = "%02x ";
 	char * cleanbuf = NULL;
 	int i = 0;
 
@@ -79,8 +79,7 @@ printLine(unsigned char * linebuf, int linelen, int mainpos)
 
 	/* the bytes */
 	for(i = 0; i < linelen; i++){
-		/* XXX i++ is an evil hack. gcc says so. i know it. i'll fix it. */
-		printf(bytefmt, linebuf[i++], linebuf[i++]);
+		printf(bytefmt, linebuf[i]);
 		DPRINTF(2, "mainpos = %d, bytesline = %d\n", 
 					mainpos, i);
 		mainpos++; /* for debug, mostly */
@@ -89,6 +88,7 @@ printLine(unsigned char * linebuf, int linelen, int mainpos)
 	/* the ascii */
 	NULLCALL(cleanbuf = (char *)malloc(linelen));
 	stripUnreadables(linebuf, cleanbuf, linelen);
+	/* XXX oops. with short packets, my column justtification is fucked */
 	printf("  %.*s", linelen, cleanbuf);
 
 	free(cleanbuf);
@@ -106,10 +106,11 @@ static void
 hexDump(unsigned char * buf, int len)
 {
 	int pos = 0; /* position in the buffer */
+	int linelen = MAXBYTESLINE;
 	
 	while(pos < len){
-		/* XXX ok, i think i will have remainder issues here */
-		pos = printLine(&buf[pos], MAXBYTESLINE, pos);
+		/* XXX i have remainder issues here */
+		pos = printLine(&buf[pos], linelen, pos);
 	} /* end while */
 
 	putchar('\n'); /* XXX redundant? */
@@ -157,7 +158,8 @@ display(int sourcefd, char * buf, int len)
 	RETCALL(gettimeofday(&tv, NULL));
 
 	if(lastsource != sourcefd){
-		printf("\ttotal %d\n--------\n", total);
+		printf("\n    total 0x%04x (%d)\n--------\n", 
+			total, total);
 		lastsource = sourcefd;
 		total = 0;
 	}

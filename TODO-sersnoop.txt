@@ -1,8 +1,12 @@
 TODO- serial snooper
 
-the decode display is butt-ugly. works fine for short packets but for long ones it's unreadable. 
-	now put the ascii in there too
-		ok, now deal with remainder issues
+the decode display is butt-ugly. 
+	works fine for short packets but for long ones it's unreadable. 
+		whoops.. looks great for long packets, but short ones are fucked
+			ok, now deal with remainder issues
+	fancy formatting. 
+		2bytes, then space. 2 spaces at 4 byte boundaries. 
+		same in ascii. yes.
 
 make the network socket code portable
 
@@ -20,8 +24,6 @@ pollLoop() is still fucked.
 	processInput() only does one fd at a time. prolly not good
 		not sure about bcast(), if i need to flush readers b4 writing?
 			STUCK: read docs
-
-clean up the evil i++ hack in hexDump()
 
 hmm. some way to glean the socket host/port from an fd/sd?
 	i need a global array, dammit.
@@ -187,3 +189,7 @@ server mode! oh shit, bind(), listen(), accept() etc.
 					i had to usea pointer flag because len 0 was problematic
 		problem! if i just have one or two bytes, i get nothing. oops
 			SOLUTION: busted out the line print
+clean up the evil i++ hack in hexDump()
+	DONE
+
+	now put the ascii in there too
