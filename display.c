@@ -29,6 +29,7 @@
 
 
 #define MAXBYTESLINE  16
+#define MAXCOLS 80
 
 
 /******************
@@ -86,10 +87,10 @@ printLine(unsigned char * linebuf, int linelen, int mainpos)
 	}
 
 	/* the ascii */
+	/* XXX oops. with short packets, my column justtification is fucked */
 	NULLCALL(cleanbuf = (char *)malloc(linelen));
 	stripUnreadables(linebuf, cleanbuf, linelen);
-	/* XXX oops. with short packets, my column justtification is fucked */
-	printf("  %.*s", linelen, cleanbuf);
+	printf(" <%.*s>", linelen, cleanbuf);
 
 	free(cleanbuf);
 
@@ -114,7 +115,7 @@ hexDump(unsigned char * buf, int len)
 		pos = printLine(&buf[pos], linelen, pos);
 	} /* end while */
 
-	putchar('\n'); /* XXX redundant? */
+	putchar('\n');
 
 }/* END HEXDUMP */
 
@@ -165,7 +166,7 @@ display(int sourcefd, char * buf, int len)
 		total = 0;
 	}
 
-	printf("%d:%d %s: 0x%04X (%d)\n", 
+	printf("\n%d:%d %s: 0x%04X (%d)", 
 		(int)tv.tv_sec, (int)tv.tv_usec, 
 		ttyname(sourcefd), len , len );
 

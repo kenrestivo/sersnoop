@@ -1,13 +1,5 @@
 TODO- serial snooper
 
-the decode display is butt-ugly. 
-	works fine for short packets but for long ones it's unreadable. 
-		whoops.. looks great for long packets, but short ones are fucked
-			ok, now deal with remainder issues
-	fancy formatting. 
-		2bytes, then space. 2 spaces at 4 byte boundaries. 
-		same in ascii. yes.
-
 make the network socket code portable
 
 autoconf 
@@ -27,6 +19,7 @@ pollLoop() is still fucked.
 
 hmm. some way to glean the socket host/port from an fd/sd?
 	i need a global array, dammit.
+		populate it at open() time.
 
 should i be using O_NDELAY on tty when i'm using select/poll?? good idea?
 	STUCK: read up on this
@@ -41,6 +34,10 @@ make the debug code optional? so i can run it as a daemon?
 
 ----------------
 BELOW THE LINE
+
+fancy formatting. 
+	2bytes, then space. 2 spaces at 4 byte boundaries. 
+	same in ascii. yes.
 
 possibly blow off all this command-line crap and use a conf file instead
 	use the gtk file-parsing library . look up the name of it in my c/notes/gtk
@@ -193,3 +190,9 @@ clean up the evil i++ hack in hexDump()
 	DONE
 
 	now put the ascii in there too
+	works fine for short packets but for long ones it's unreadable. 
+		whoops.. looks great for long packets, but short ones are fucked
+			ok, now deal with remainder issues
+				DONE. a simple line - pos issue
+the decode display is butt-ugly. 
+	SOLUTION: nice now.
