@@ -1,5 +1,6 @@
+#!/bin/sh
+
 #$Id$
-#makefile for serial snooper
 
 # Copyright (C) 2002  ken restivo <ken@restivo.org>
 #
@@ -11,38 +12,38 @@
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.                                  
-#
+# GNU General Public License for more details.                                  #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-#dirs
-KENINCL=/mnt/kens/ki/is/c/kenincl
 
-#build stuff
-TARGETS= sersnoop
-CFLAGS:= -g -Wall  -O3  -I/lib/modules/`uname -r`/build/include -I$(KENINCL)
-OBJS:= sersnoop.o 
+KENCLOC=/mnt/kens/ki/is/c
 
-#
+FILES=" 
+		TO* \
+		*.[ch] \
+		Makefile \
+		proj \
+"
 
+DAY=nite
 
-all: $(TARGETS)
+if [ "$1" ]; then
+	DAY="$1"
+fi
 
-clean::
-	rm -f ${TARGET} ${OBJS} core
-
-sersnoop: sersnoop.o
-	${CC} ${CFLAGS} ${LDFLAGS} -o  $@ sersnoop.o
-
-test: sersnoop
-	./sersnoop
-
-
-debug: sersnoop
-	@gdb ./sersnoop
-
-
+case "$DAY" in
+	day)
+		gvim ${FILES}
+		;;
+	local)
+		vim ${FILES}
+		;;
+	*)
+		kvi ${FILES}
+	;;
+esac
+	
 #EOF
 
