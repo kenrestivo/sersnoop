@@ -1,17 +1,25 @@
 TODO- serial snooper
 
-try it with sendfile? is it any faster/more responsive?
+package up as a tarball and post it
+	add license headers
+	write an index page
 
 make the debug code optional? so i can run it as a daemon?
 	essentially, make all the display.c shit DPRINTF level 1
 		and all the other diagnostics DPRINTF level 2+
-	finally, daemonize it.
+	finally, daemonize it. don't criticize it.
+	try it with sendfile? is it any faster/more responsive? if i don't need debug.
+
+the decode display is butt-ugly. works fine for short packets but for long ones it's unreadable. i need to make it more xxd-like
+
+make the network socket code portable
+
+autoconf 
 
 ----------------
 STUCK
 
-
-pollloop is still fucked. 
+pollLoop() is still fucked. 
 	seems like poll() returns if an fd closes, but processInput wigs
 		STUCK: read the docs, poll, etc. find out what's supposed to happen
 		create an exception handling routine that removeFd's etc
@@ -20,16 +28,22 @@ pollloop is still fucked.
 			STUCK: read docs
 
 hmm. some way to glean the socket host/port from an fd/sd?
-	getpeername
-		STUCK:  ack. no good, too slow. i need a global array, dammit.
+	i need a global array, dammit.
 
-server mode! oh shit, how to do that?
+server mode! oh shit, bind(), listen(), accept() etc.
+	STUCK: how to deal with that on the command line???
 
 should i be using O_NDELAY on tty when i'm using select/poll?? good idea?
 	STUCK: read up on this
 
+portability: my network code is too POSIX-ish, works on linux but won't compile on bsd
+	STUCK: odds are that i'm in autoconf-land here.
+
 ----------------
 BELOW THE LINE
+
+possibly blow off all this command-line crap and use a conf file instead
+	use the gtk file-parsing library . look up the name of it in my c/notes/gtk
 
 cfmakeraw() instead of all that manual flag-setting
 
@@ -55,6 +69,8 @@ create a DIEUSAGE macro?
 ----------------
 NOWHERE
 
+	getpeername
+		NOWHERE:  ack. no good, too slow. 
 	wow! if the cable is present, i get an 0x07 back... is that predictable?
 		NO. could be a good way to tell what's going on!
 

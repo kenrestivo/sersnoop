@@ -17,7 +17,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+
+#names
+PACKAGE=sersnoop
+SRCDIR=sersnoop
+REL=0.1
+
 #dirs
+DISTDIR=/mnt/www/restivo/projects/$(PACKAGE)/src
 KENINCL=/mnt/kens/ki/is/c/kenincl
 
 #build stuff
@@ -55,6 +62,22 @@ selecttest: sersnoop
 
 debug: sersnoop
 	@gdb ./sersnoop
+
+dist: sersnoop
+	set -e; \
+	cd ..; \
+	tar -cvf $(PACKAGE)-$(REL).tar \
+			$(SRCDIR)/*.[ch] \
+			$(SRCDIR)/Makefile \
+			$(SRCDIR)/TO* ; \
+	gzip -f9  $(PACKAGE)-$(REL).tar
+
+distinst: dist
+	mv ../$(PACKAGE)-$(REL).tar.gz $(DISTDIR)
+	(cd $(DISTDIR) && \
+			rm -f $(PACKAGE)-current.tar.gz  ; \
+			ln -s $(PACKAGE)-$(REL).tar.gz $(PACKAGE)-current.tar.gz)
+	cp $(KENINCL)/kenmacros.h $(DISTDIR)/
 
 
 #EOF

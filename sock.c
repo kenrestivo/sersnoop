@@ -1,5 +1,21 @@
 /*	$Id$ 
 	socket i/o functions
+
+    Copyright (C) 2002  ken restivo <ken@restivo.org>
+    
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                   
+    GNU General Public License for more details.
+    
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -105,6 +121,7 @@ opensock(char * path)
 	DPRINTF(1, "now connected to %s on %d from %s\n", 
 		destHost, destPort, myname);
 
+#ifdef IPPROTO_TCP
 	RETCALL(setsockopt(	sd,            /* socket affected */
 					IPPROTO_TCP,     /* set option at TCP level */
 					TCP_NODELAY,     /* name of option */
@@ -112,6 +129,7 @@ opensock(char * path)
 											cruft */
 					sizeof(int))    /* length of option value */
 	);
+#endif /* IPPROTO_TCP */
 
 
 	return sd;
