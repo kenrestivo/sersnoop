@@ -62,14 +62,16 @@ int
 twoWayPoll(int fd1, int fd2)
 {
 	static struct pollfd pfds[3];
-	static int pfdCount ; /* used by the newpfd utility function */
+	static int pfdCount = 0; /* used by the newpfd utility function */
 	nfds_t foundCount;
 	char chunk[READBUF];
 	int c;
 	int i;
 
+	SYSCALL(!isatty(fd1));
+	SYSCALL(!isatty(fd2));
+
    /* i have to initialize this first, since i don't do it in global decl */
-    pfdCount = 0;
     memset(pfds, -1, sizeof(pfds)); /* -1 is the skip flag for poll */
 
     newPfd(pfds, &pfdCount, fd1, POLLIN);

@@ -7,6 +7,7 @@
 #include <strings.h>
 #include <termios.h>
 #include <errno.h>
+#include <getopt.h>
 #include <sys/ioctl.h>
 #include <kenmacros.h>
 
@@ -17,6 +18,34 @@
 
 /* GLOBS */
 int debug = 1;
+extern char *optarg;
+extern int optind, opterr, optopt;
+
+/**********************8
+	USAGE
+	prints usage and dies
+************************/
+void
+usage(){
+	fprintf(stderr, "usage: sersnoop
+	-D terminal device (default /dev/ttyS1)
+	-b terminal baudrate (default 38400)
+	-d debug level
+	");
+	exit(1);
+
+} /* END USAGE */
+
+
+/******************
+	DECODEBAUD
+******************/
+int
+decodeBaud()
+{
+	return(-1);
+}/* END DECODEBAUD */
+
 
 
 /******************
@@ -25,22 +54,45 @@ int debug = 1;
 int
 main(int argc, char ** argv)
 {
-	unsigned int slaveNum = -1;
+	char * ttyPath = NULL ;
 	char * slaveName = NULL ;
 	int ptfd = -1;	
 	int ttyfd = -1;	
+	int baud = 38400;
 	int rv = 0;
+	int c;
+
+
+	/* opts and such */
+	while( (c= getopt(argc, argv, "d:D:b:")) != -1) {
+		switch(c){
+			case 'D':
+				ttyPath = optarg;
+				break;
+			case 'd':
+				debug = atoi(optarg);
+				break;
+			case 'b':
+				if((baud = decodeBaud(atoi(optarg)) <1)){
+					usage();
+				}
+				break;
+			default:
+				usage();
+				break;
+		} /* end switch */
+	} /* end while */
+	
 
 	/* oh, why not */
 	signalSetup();
 
 	/* open the local pty */
-	/* XXX fucked 
-		SYSCALL(ptfd = linuxGetPty(&slaveNum));	 */
-	SYSCALL(ptfd = bsdGetPty(&slaveName, sizeof(slaveName)));
+	SYSCALL(ptfd = getPty(&slaveName));
 
 	/* open the serial port */
-	ttyfd = opentty("/dev/ttyS1", B38400);
+	/* TODO: baud */
+	ttyfd = opentty(ttyPath, B38400);
 
 	/* and now the loop de loop */
 	rv = twoWayPoll(ptfd, ttyfd); 

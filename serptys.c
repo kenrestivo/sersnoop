@@ -14,18 +14,19 @@
 #include <kenmacros.h>
 
 /* DEFS */
-#define SLAVELEN 12
+#define SLAVELEN 32
 
 /*****************************
     LINUXGETPTY
 	gets a sysv-style ptmx
 	XXX this appears to be VERY linux-specific and non portable
 	it also requires devpts fs in kernel and in in /etc/fstab
+	puts the name of the slave term into *slaveName
 	returns the fd or -1 if error
-	also puts the pty number into slaveNump
 ******************************/
-int 
-linuxGetPty(unsigned int * slaveNump)
+#ifdef TIOCGPTN
+static int 
+linuxGetPty(char ** slaveName)
 {
     int masterFd = 0 ;
 		
@@ -33,14 +34,19 @@ linuxGetPty(unsigned int * slaveNump)
 	RETCALL( masterFd = open("/dev/ptmx", O_RDWR)) ;
 		
 	/* get the number of the slave - ptsname */
-	RETCALL( ioctl(masterFd, TIOCGPTN, slaveNump) );
+	RETCALL( ioctl(masterFd, TIOCGPTN, &slaveNum) );
 
 
    DPRINTF( 1, "your pty is /dev/pts/%d and the master is on fd %d  \n",
-        *slaveNump,  masterFd);
+        slaveNum,  masterFd);
+
+	NULLCALL(*slaveName = (char *)malloc(SLAVELEN));
+    snprintf(*slaveName, SLAVELEN, "/dev/pts/%d", slaveNum);
+	
 
     return  masterFd;
 } /* END LINUXGETPTY */
+#endif
 
 /**************************
     BSDGETPTY
@@ -49,8 +55,8 @@ linuxGetPty(unsigned int * slaveNump)
         name of slave pty to open, in input 
     note: this is portable, works with any bsd, linux, or solaris system
 ***************************/
-int 
-bsdGetPty(char ** slaveName, int slavelen)
+static int 
+bsdGetPty(char ** slaveName)
 {
     /* TODO: is there any way to avoid overfloating the input string? 
         if it isn't 32 chars long? */
@@ -96,7 +102,22 @@ bsdGetPty(char ** slaveName, int slavelen)
 
 } /* END BSDGETPTY */
 
+/**************************
+    GETPTY
+    takes in: string for term
+    returns: fd of master, if good, -1 if no go, -2 if busy
+        name of slave pty to open, in input 
+	NOTE: all of these functions malloc *slaveName, you must free
+***************************/
+int 
+getPty(char ** slaveName )
+{
 
+	/* TODO: put a configure.in test and choose based on that 
+		SYSCALL(ptfd = linuxGetPty(&slaveName));	 */
+	return(bsdGetPty(&slaveName));
+
+} /* END GETPTY */
 
 /* EOF */
 

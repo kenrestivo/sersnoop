@@ -7,11 +7,9 @@
 #define SERPTYS_H
 
 
+/* NOTE: this malloc's *slaveName, you must free */
 int 
-linuxGetPty(unsigned int * slaveNump);
-
-int 
-bsdGetPty(char ** slaveName, int slavelen);
+getPty(char ** slaveName );
 
 #endif /* SERPTYS_H */
 
