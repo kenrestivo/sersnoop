@@ -1,0 +1,9 @@
+sersnoop (0.4) unstable; urgency=low
+
+  * Initial Release.
+
+ -- ken restivo <ken@restivo.org>  Tue, 17 Jun 2003 01:55:10 -0700
+
+Local variables:
+mode: debian-changelog
+End:
