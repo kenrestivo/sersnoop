@@ -1,9 +1,5 @@
 TODO- serial snooper
 
-package up as a tarball and post it
-	add license headers
-	write an index page
-
 make the debug code optional? so i can run it as a daemon?
 	essentially, make all the display.c shit DPRINTF level 1
 		and all the other diagnostics DPRINTF level 2+
@@ -153,3 +149,12 @@ ok, go for it: add in the network code! now i have something like net2tty
 	test with the actual camera! this be it... 
 		hmm. weirdness.  SEP: chotplay
 		HAH! well, with two chotplays in serial, it works JUST FINE!
+	add license headers
+		DONE
+	write an index page
+		DONE
+
+package up as a tarball and post it
+	off we go to freshmeat.net
+		DONE
+
