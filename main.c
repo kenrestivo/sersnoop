@@ -107,7 +107,7 @@ main(int argc, char ** argv)
 	memset(&gfds, 0, sizeof(gfds)); /* clear the array, must be 0 terminated! */
 
 	/* opts and such */
-	while( (c= getopt(argc, argv, "pd:a:b:sD")) != -1) {
+	while( (c= getopt(argc, argv, "phd:a:b:sD")) != -1) {
 		switch(c){
 			case 'd': /* first thing i want to know about */
 				debug = atoi(optarg);

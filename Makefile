@@ -82,8 +82,9 @@ dist: sersnoop
 	tar -cvf $(PACKAGE)-$(REL).tar \
 			$(SRCDIR)/*.[ch] \
 			$(SRCDIR)/Makefile \
-			$(SRCDIR)/TO* ; \
-	gzip -f9  $(PACKAGE)-$(REL).tar
+			$(SRCDIR)/TO*  \
+			$(SRCDIR)/README  \
+	; gzip -f9  $(PACKAGE)-$(REL).tar
 
 distinst: dist
 	mv ../$(PACKAGE)-$(REL).tar.gz $(DISTDIR)
