@@ -1,11 +1,7 @@
 TODO- serial snooper
 
-debianize it. don't critizize it.
-	dh-make
-		figure out how to make it expect a "native" package
-	have yet another look at giFT
-
 add ssl support. yeah, right.
+	STUCK: go get a local copy of the ssl docs and tutorials. duh.
 	man ssl! it officially documents the api
 		read the online version with hyperlinks.
 	read soume source that uses ssl and poll/select
@@ -48,6 +44,11 @@ add ssl support. yeah, right.
 					and returns it AND sets re-read flag
 					if the retval EQUALS the count. IIW, reads all-or-nothing?
 					
+debianize it. don't critizize it.
+	dh-make
+		figure out how to make it expect a "native" package
+	have yet another look at giFT
+
 
 once and for all, set up a proper, robust CA, using wheelhouse's docs
 	SEP: ssh
@@ -86,8 +87,11 @@ add logging (well, duh, why didn't i think of this?)
 
 somehow include kenmacros.h in the distribution
 
-make the network socket code portable
-	autoconf 
+make it bsd-capable too
+	make the network socket code portable
+		um, i think it already is!
+	autoconf ? neeeded?
+
 possibly blow off all this command-line crap and use a conf file instead
 	use the gtk file-parsing library . look up the name of it in my c/notes/gtk
 
@@ -312,3 +316,5 @@ fix the getopts: die if no args. DONE
 	an sslsock file for opening the sockets DONE
 			do i need BIO? or can i just set_fd instead?
 				SOLUTION: i don't need BIO, if i use fd, the bio is automatically done
+	strndup. grr. how bout asprintf?
+		SOLUTION: that works just fine

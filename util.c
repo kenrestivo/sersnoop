@@ -41,7 +41,11 @@ splitColon(char * path, char ** name)
 		return(-1);
 	}	
 
+	/* bsd wants this */
+	if( asprintf(name, path,colon - path ) < 1 ){
+#if 0
 	if( (*name = strndup(path,colon - path )) == NULL ){
+#endif /* 0 */
 		fprintf(stderr, "splitColon(): strndup is out of memory\n");
 		return(-1);
 	}
