@@ -1,15 +1,12 @@
 TODO- serial snooper
 
 add ssl support. yeah.
-	some way to specify it on the command line
-		an "S" flag? this is getting goofy.
 	an sslsock file for opening the sockets
 		no big certificate checking
 	add the SSL structs to the fdstruct object
 	hellacious hacks to pollcat.c 
 		read-write. look in jabberd, gabber, stunnel, etc.
-		somehow conditionalize it
-	some kind of conditional compliation?
+		conditionalize it on USE_SSL
 
 add logging (well, duh, why didn't i think of this?)
 	although tee is JUST FINE too
@@ -254,3 +251,6 @@ should i be using O_NDELAY on tty when i'm using select/poll?? good idea?
 			i.e. with each byte sent.. hmm. maybe that's not impossible...
 		DONE! wasn't too bad, but it's still a little goofy
 fix the getopts: die if no args. DONE
+	some way to specify it on the command line
+		an "S" flag? this is getting goofy. DONE
+	some kind of conditional compliation? DONE. SSL=yes will build ssl

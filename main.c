@@ -34,6 +34,9 @@
 #include "sig.h"
 #include "selectloop.h"
 #include "sock.h"
+#ifdef USE_SSL
+#include "sslsock.h"
+#endif /* USE_SSL */
 #include "display.h"
 #include "common.h"
 
@@ -53,14 +56,36 @@ struct fdstruct * gfds[3];  /* null-term array of structs. */
 struct fdstruct *
 parseDevice(char * path)
 {
-	if(*path == '/'){
+	/* CASE: tty */
+	if(*path == '/'){ 
 		return opentty(path);
 	} else if ( strncmp(path, "pty", 3) == 0 ){
 		return getPty(ptmx);
-	} else if (strchr(path,':') == NULL){ /* network server */
-		return openServer(path);
-	} else { /* network client */
-		return openSock(path);
+	/* CASE: network server */
+	} else if (strchr(path,':') == NULL){ 
+		if(path[strlen(path)-1] == 'S'){
+#ifdef USE_SSL
+			return openSSLServer(path);
+#else /* USE_SSL */
+		fprintf(stderr, "%s: ssl support not compiled in\n", path);
+		exit(1);
+#endif /* USE_SSL */
+
+		} else {
+			return openServer(path);
+		}
+	/* CASE network client */
+	} else { 
+		if(path[strlen(path)-1] == 'S'){
+#ifdef USE_SSL
+			return openSSLSock(path);
+#else /* USE_SSL */
+		fprintf(stderr, "%s: ssl support not compiled in\n", path);
+		exit(1);
+#endif /* USE_SSL */
+		} else {
+			return openSock(path);
+		}
 	}
 
 }/* END PARSEDEVICE */
@@ -73,12 +98,16 @@ parseDevice(char * path)
 ************************/
 void
 usage(){
-	fprintf(stderr, "sersnoop version " REL "\n"
+	fprintf(stderr, "sersnoop version " REL 
+#ifdef USE_SSL
+	" with SSL\n"
+#endif /* USE_SSL */
+	"\n"
 	"\t-a first device (default /dev/ttyS1:38400)\n"
 	"\t-b second device (default pty)\n"
 	"\t either or both devices can be:\n"
-	"\t\t<host:port> or <ipaddr:port> for client\n"
-	"\t\t<port> for server\n"
+	"\t\t<host:port> or <ipaddr:port> for client (or <host:port>S for SSL-based client)\n"
+	"\t\t<port> for server (or <port>S for SSL-based server\n"
 	"\t\t</abs/path/to/ttyname:baud>, for tty or\n"
 	"\t\t<pty> (it'll pick a pty for you)\n"
 	"\t-d debug level\n"
