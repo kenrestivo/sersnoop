@@ -1,18 +1,23 @@
 TODO- serial snooper
 
 start the writing/reading. 
-	deal with the writing now.
-		shall i select for write? hmm... could get tricky...
-		do some isprint() shit.
 	make sure it works, and works well.
-
-should i be using O_NDELAY on tty when i'm using select/poll?? good idea?
+		hmm. some constipation. my while() read loop?
 
 add in the decoding/printing
 	lift from xxd? ;-)
 
+deal with the writing now.
+	shall i select for write? hmm... could get tricky...
+
 ----------------
 STUCK
+
+hmm. shall i read until done, or just grab one chunk?
+	STUCK: look around at other code
+
+should i be using O_NDELAY on tty when i'm using select/poll?? good idea?
+	STUCK: read up on this
 
 ----------------
 BELOW THE LINE
@@ -58,3 +63,8 @@ ack. the poll is broken. but raw reads work just fine.
 		SOLUTION: just looked in orielly book. simple change
 
 baud setting looks alllll goooodd
+		ack, garbage chars, or something wrong. readcount is too long!
+			SOLUTION: it includes cr/lf, AND it's not null-terminated. duh.
+	get %*s going or snprintf or something
+		SOLUTION: done
+	do some isprint() shit. DONE

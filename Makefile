@@ -37,7 +37,10 @@ sersnoop: $(sersnoop_OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o  $@ $(sersnoop_OBJS)
 
 test: sersnoop
-	./sersnoop
+	./sersnoop 
+
+safetest: sersnoop
+	./sersnoop  -D/dev/ttyS0 -b 9600
 
 selecttest: sersnoop
 	./sersnoop -s

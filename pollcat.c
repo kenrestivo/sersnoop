@@ -62,6 +62,31 @@ static void removePfd(struct pollfd *pfds, int * pfdCount, int fd)
 } /* END REMOVEPFD */
 
 
+/******************
+	BCAST
+	broadcast the whatever, out to all the other pfds
+******************/
+static int
+bcast(char * buf, int len, int fromfd, struct pollfd * pfds, int numfds)
+{
+	int i  = 0;
+
+	while(i  < numfds){
+		if(pfds[i].fd != fromfd){
+			DPRINTF(2, "shouting out to my homey %s on fd %d\n",
+				ttyname(pfds[i].fd), pfds[i].fd);
+			/* XXX this might well fail if i don't have NDELAY. 
+					it might need to be in loop. */
+			RETCALL(write(pfds[i].fd, buf, len));	
+		}
+
+		i++;
+	}
+		
+}/* END BCAST */
+
+
+
 /************************
 	PROCESSINPUT
 	cycles through the fd's with stuff on 'em, and prints it
@@ -78,10 +103,13 @@ processInput(struct pollfd * pfds, int numFds)
 		if(pfds[i].revents & POLLIN ){
 			/* XXX  should i while() here, or just grab one chunk and leave? */
 			while ( (rcount = read(pfds[i].fd, buf, sizeof(buf)) ) >0 ){
-				/* buncha UGLY debug stuff */
+
+				/* shout it to all the others */
+				bcast(buf, rcount, pfds[i].fd, pfds, numFds);
+
+				/* hey, not that i'll ever use slowlaris again, but wtf */
 				#ifdef __SVR4
-				DPRINTF(1, "got %d bytes from fd %d: ",
-					rcount, pfds[i].fd  );
+				RETCALL(display( "unknown term XXX fix me", buf, rcount) );
 				#else
 				RETCALL(display( ttyname(pfds[i].fd), buf, rcount) );
 				#endif /* __SVR4 */
