@@ -12,7 +12,7 @@
 a simple command-line tool for linux that echoes bytes to and from any two serial ports, ptys, or network sockets, and prints all traffic to stdout, in hex and ascii.
 
 <h3>why?</h3>
-i needed a tool to redirect programs that only understand serial ports (or pty's) to communicate over the network instead (to a terminal server). then i discovered bugs. i needed to debug what was going on over the serial connection, using a pty. therefore, i needed a way to display hex dumps, and also to optionally connect the serial port to a pty and/or network socket. and it just kind of went from there...
+i needed a tool to redirect programs that only understand serial ports (or pty's) to communicate over the network instead (to a terminal server). then i discovered bugs in the serial communications. i needed to debug what was going on over the serial port, using a pty. therefore, i needed a way to display hex dumps, and also to optionally connect the serial port to a pty and/or network socket. and it just kind of went from there...
 
 <h3>status</h3>
 <li>alpha. it works swimmingly well on linux, but needs cleanups and portability.
