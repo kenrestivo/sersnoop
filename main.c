@@ -106,6 +106,10 @@ main(int argc, char ** argv)
 
 	memset(&gfds, 0, sizeof(gfds)); /* clear the array, must be 0 terminated! */
 
+	if(argc < 2){
+		usage();
+	}
+
 	/* opts and such */
 	while( (c= getopt(argc, argv, "phd:a:b:sD")) != -1) {
 		switch(c){
