@@ -69,7 +69,7 @@ parseDevice(char * path)
 ************************/
 void
 usage(){
-	fprintf(stderr, "usage: sersnoop \n"
+	fprintf(stderr, "sersnoop version " REL "\n"
 	"\t-a first device (default /dev/ttyS1:38400)\n"
 	"\t-b second device (default pty)\n"
 	"\t either or both devices can be:\n"
@@ -80,6 +80,7 @@ usage(){
 	"\t-d debug level\n"
 	"\t-p use ptmx\n"
 	"\t-s try it with select not poll (for debugging)\n"
+	"\t-h this help (and version number)\n"
 	);
 	exit(1);
 
@@ -118,6 +119,7 @@ main(int argc, char ** argv)
 			case 's':
 				sel= 1;
 				break;
+			case 'h':
 			default:
 				usage();
 				break;
