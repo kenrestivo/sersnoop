@@ -2,11 +2,9 @@ TODO- serial snooper
 
 add in the decoding/printing
 	lift from xxd? ;-) at least read it
-	some static var, who was talking last, so if it changes, i print that?
-		cool. but... the totals don't look quite yet
 
-deal with the writing now.
-	shall i select for write? hmm... could get tricky...
+ok, go for it: add in the network code! now i have something like net2tty
+	make the debug code optional? so i can run it as a daemon?
 
 ----------------
 STUCK
@@ -27,6 +25,9 @@ BELOW THE LINE
 ----------------
 NOWHERE
 
+deal with the writing now.
+	shall i select for write? hmm... could get tricky...
+		NOWHERE: not needed, i don't think
 	try it on netbsd? NOWHERE: same problem
 	try the oldskool berkeley shit instead?
 		it fixes the crash at basic read
@@ -72,3 +73,6 @@ hmm. shall i read until done, or just grab one chunk?
 start the writing/reading. 
 	make sure it works, and works well.
 		well, it does, dammit!
+	some static var, who was talking last, so if it changes, i print that?
+		cool. but... the totals don't look quite yet
+			SOLUTION: sequence is important ;-)

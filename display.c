@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#include <sys/time.h>
 #include <kenmacros.h>
 
 
@@ -49,12 +50,13 @@ display(int sourcefd, char * buf, int len)
 	char * clean = NULL;
 	static int lastsource = -1;
 	static int total = 0;
+	struct timeval tv;
+
+	RETCALL(gettimeofday(&tv, NULL));
 
 	NULLCALL(clean =(char *)malloc(len));
 
 	stripUnreadables(buf, clean, len);
-
-	total += len;
 
 	if(lastsource != sourcefd){
 		printf("\ttotal %d\n--------\n", total);
@@ -62,7 +64,11 @@ display(int sourcefd, char * buf, int len)
 		total = 0;
 	}
 
-	printf("%s: (%d) <%.*s>\n", ttyname(sourcefd), len,  len, clean);
+	printf("%d:%d %s: (%d) <%.*s>\n", 
+		tv.tv_sec, tv.tv_usec, ttyname(sourcefd), len,  len, clean);
+
+	total += len;
+
 
 	return 0;
 
