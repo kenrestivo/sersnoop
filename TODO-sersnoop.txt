@@ -7,7 +7,6 @@ autoconf
 ----------------
 STUCK
 
-
 make the debug code optional? so i can run it as a daemon?
 	essentially, make all the display.c shit DPRINTF level 1
 		and all the other diagnostics DPRINTF level 2+
@@ -24,6 +23,8 @@ poll still returns with -1 data, if my pty went away
 	exception? or is that just for network sockets?
 	do i need to check write before writing, in bcast?
 		non-trivial change. would need to put write into the poll loop
+
+SO_REUSEADDR in socket server
 
 ----------------
 BELOW THE LINE
