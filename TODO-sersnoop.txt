@@ -1,7 +1,16 @@
 TODO- serial snooper
 
-write a simple poll/select loop to read from both/either
-	there's one in sockclient/server isn't there?
+ack. the linux ptmx shit is broken.
+	try the oldskool berkeley shit instead?
+		it fixes the crash at basic read
+		ack. that's borken too
+	try putting signal handlers in
+	re-read unix book on terminals
+	look at openssh?
+	try it on netbsd?
+
+start the writing/reading. 
+	make sure it works, and works well.
 
 add in the decoding/printing
 	lift from xxd? ;-)
@@ -12,6 +21,9 @@ STUCK
 
 ----------------
 BELOW THE LINE
+
+	try termtest on netbsd
+
 
 ----------------
 NOWHERE
@@ -27,4 +39,7 @@ set up and open pty
 	lift from termtest
 	use only the linux version, for now anyway.
 		DONE
+
+write a simple poll/select loop to read from both/either
+	there's one in sockclient/server isn't there? DONE
 

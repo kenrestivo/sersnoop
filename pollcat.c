@@ -4,6 +4,7 @@
 */
 
 #include <string.h>
+#include <errno.h>
 #include <sys/poll.h>
 #include <kenmacros.h>
 
@@ -16,12 +17,11 @@
     Add a new socket to the list of polled fds 
 ****************/
 static void
-newPfd(struct pollfd *pfds, int * pfdCount, int fd, int events, int revents)
+newPfd(struct pollfd *pfds, int * pfdCount, int fd, int events)
 {
 
   pfds[*pfdCount].fd = fd;
   pfds[*pfdCount].events = events;
-  pfds[*pfdCount].revents = revents;
   (*pfdCount)++;
 
 } /* END NEWPFD */
@@ -69,8 +69,8 @@ twoWayPoll(int fd1, int fd2)
     pfdCount = 0;
     memset(pfds, -1, sizeof(pfds)); /* -1 is the skip flag for poll */
 
-    newPfd(pfds, &pfdCount, fd1, POLLIN, 0);
-    newPfd(pfds, &pfdCount, fd2, POLLIN, 0);
+    newPfd(pfds, &pfdCount, fd1, POLLIN);
+    newPfd(pfds, &pfdCount, fd2, POLLIN);
 
    while(1){
         SYSCALL(foundCount = poll(pfds, pfdCount, POLLTIMEOUT));
@@ -78,12 +78,19 @@ twoWayPoll(int fd1, int fd2)
             continue;
         /* find and handle fd's with events pending */
         for(i = 0; i < pfdCount; i++){
+			if(pfds[i].revents != POLLERR){
+				DPRINTF(1, "whoops! error on fd %d ",
+					pfds[i].fd);
+				/* this should force it to fail and set errno */
+				RETCALL(c = read(pfds[i].fd, chunk, sizeof(chunk)));
+			}
+
 			/* skip empties */
-			if(!pfds[i].revents)
+			if(pfds[i].revents != POLLIN)
 				continue;
 
-			c = read(pfds[i].fd, chunk, sizeof(chunk));
-			DPRINTF(1, "read %d chars from pfd %d\n", c, i);
+			SYSCALL(c = read(pfds[i].fd, chunk, sizeof(chunk)));
+			DPRINTF(1, "read %d chars from pfd %d\n", c, pfds[i].fd);
 
 			if(pfds[i].fd == fd1){
 			} else if(pfds[i].fd == fd2){

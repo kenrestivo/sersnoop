@@ -25,19 +25,27 @@ int
 main(int argc, char ** argv)
 {
 	unsigned int slaveNum = -1;
+	char * slaveName = NULL ;
 	int ptfd = -1;	
 	int ttyfd = -1;	
+	int rv = 0;
 
 	/* open the local pty */
-	SYSCALL(ptfd = linuxGetPty(&slaveNum));	
+	/* XXX fucked 
+		SYSCALL(ptfd = linuxGetPty(&slaveNum));	 */
+	SYSCALL(ptfd = bsdGetPty(&slaveName, sizeof(slaveName)));
 
 	/* open the serial port */
 	ttyfd = opentty("/dev/ttyS1", B38400);
+
+	/* and now the loop de loop */
+	rv = twoWayPoll(ptfd, ttyfd); 
 	
 	/* eventually move the cleanups out, to be signal-clean */
+	free(slaveName);
 	SYSCALL(close(ptfd));
 	SYSCALL(close(ttyfd));
-	return 0;
+	return rv;
 }/* END MAIN */
 
 
