@@ -3,7 +3,9 @@ TODO- serial snooper
 start the writing/reading. 
 	deal with the writing now.
 		shall i select for write? hmm... could get tricky...
+		do some isprint() shit.
 	make sure it works, and works well.
+
 
 add in the decoding/printing
 	lift from xxd? ;-)
@@ -54,3 +56,4 @@ ack. the poll is broken. but raw reads work just fine.
 	look at openssh?
 		SOLUTION: just looked in orielly book. simple change
 
+baud setting looks alllll goooodd

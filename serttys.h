@@ -6,6 +6,9 @@
 #ifndef SERTTYS_H
 #define SERTTYS_H
 
+int
+decodeBaud(int baud);
+
 int 
 changespeed( int fd, int baud);
 

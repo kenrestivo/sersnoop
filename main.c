@@ -1,5 +1,5 @@
 /* $Id$ 
-	serialmon.c
+	main.c for serialsnoop
 	does raw tty comms, forwards to/from pty, and prints out waz happenin.
 */
 
@@ -39,16 +39,6 @@ usage(){
 } /* END USAGE */
 
 
-/******************
-	DECODEBAUD
-******************/
-int
-decodeBaud()
-{
-	return(-1);
-}/* END DECODEBAUD */
-
-
 
 /******************
 	MAIN
@@ -60,7 +50,7 @@ main(int argc, char ** argv)
 	char * slaveName = NULL ;
 	int ptfd = -1;	
 	int ttyfd = -1;	
-	int baud = 38400;
+	int baudcode = 0xF; /* 38400 by default */
 	int rv = 0;
 	int sel = 0;
 	int c;
@@ -83,7 +73,7 @@ main(int argc, char ** argv)
 				sel= 1;
 				break;
 			case 'b':
-				if((baud = decodeBaud(atoi(optarg)) <1)){
+				if((baudcode = decodeBaud(atoi(optarg)) <1)){
 					usage();
 				}
 				break;
@@ -101,8 +91,7 @@ main(int argc, char ** argv)
 	SYSCALL(ptfd = getPty(&slaveName));
 
 	/* open the serial port */
-	/* TODO: baud */
-	ttyfd = opentty(ttyPath, B38400);
+	ttyfd = opentty(ttyPath, baudcode);
 
 	/* and now the loop de loop */
 	rv = sel ? twoWaySelect(ptfd, ttyfd) : twoWayPoll(ptfd, ttyfd); 
