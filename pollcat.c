@@ -31,10 +31,11 @@ extern int shutdownFlag;
 static void
 newPfd(struct pollfd *pfds, int * pfdCount, int fd, int events)
 {
-
-  pfds[*pfdCount].fd = fd;
-  pfds[*pfdCount].events = events;
-  (*pfdCount)++;
+	DPRINTF(1, "adding fd %d to list... ", fd);
+	pfds[*pfdCount].fd = fd;
+	pfds[*pfdCount].events = events;
+	(*pfdCount)++;
+	DPRINTF(1, "now %d fd's in list\n", *pfdCount);
 
 } /* END NEWPFD */
 
@@ -48,6 +49,7 @@ static void removePfd(struct pollfd *pfds, int * pfdCount, int fd)
 {
   int i,j;
 
+	DPRINTF(1, "removing fd %d from list...", fd);
     i=0;
     while (i<*pfdCount) {
         if (pfds[i].fd != fd) {
@@ -59,6 +61,7 @@ static void removePfd(struct pollfd *pfds, int * pfdCount, int fd)
             pfds[j] = pfds[j+1];
         }
     }
+	DPRINTF(1, "now %d fd's left\n", *pfdCount);
 } /* END REMOVEPFD */
 
 

@@ -46,6 +46,10 @@ safetest: sersnoop
 netsafe: sersnoop
 	./sersnoop  -a pty -b ts:23
 
+nettest: sersnoop
+	./sersnoop  -a pty -b ts:10010
+
+
 selecttest: sersnoop
 	./sersnoop -s -a/dev/ttyS1:38400 -b pty
 

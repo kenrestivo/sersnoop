@@ -55,23 +55,24 @@ opensock(char * path)
 
 	/* resolve the address of the machine i'm trying to reach */
 	assert(destHost != NULL && destPort >0 );
-	NULLCALL( (destHe = gethostbyname(destHost) ) );
-	switch(h_errno) {
-		case HOST_NOT_FOUND:
-			fputs("Host not found.\n", stderr);
-			break;
-		case TRY_AGAIN:
-			fputs("Transient failure.\n", stderr);
-			break;
-		case NO_RECOVERY:
-			fputs("No recovery, whatever that means.\n", stderr);
-			break;
-		case NO_ADDRESS:
-			fputs("No address found.\n", stderr);
-			break;
-		default: fputs("Unknown error.\n", stderr);
-			return -1;
-			break;
+	if( (destHe = gethostbyname(destHost) ) == NULL){
+		switch(h_errno) {
+			case HOST_NOT_FOUND:
+				fputs("Host not found.\n", stderr);
+				break;
+			case TRY_AGAIN:
+				fputs("Transient failure.\n", stderr);
+				break;
+			case NO_RECOVERY:
+				fputs("No recovery, whatever that means.\n", stderr);
+				break;
+			case NO_ADDRESS:
+				fputs("No address found.\n", stderr);
+				break;
+			default: fputs("Unknown error.\n", stderr);
+				break;
+		}
+		return -1;
 	}
 
 	RETCALL (sd = socket(PF_INET, SOCK_STREAM, 0)) ;

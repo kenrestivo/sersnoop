@@ -1,7 +1,7 @@
 TODO- serial snooper
 
 ok, go for it: add in the network code! now i have something like net2tty
-	test with the actual camera! this be it...
+	test with the actual camera! this be it... SEP: chotplay
 
 make the debug code optional? so i can run it as a daemon?
 	essentially, make all the display.c shit DPRINTF level 1
@@ -12,7 +12,8 @@ make the debug code optional? so i can run it as a daemon?
 STUCK
 
 hmm. some way to glean the socket host/port from an fd/sd?
-	STUCK: read docs, socket faq, etc
+	getpeername
+		STUCK:  ack. no good, too slow. i need a global array, dammit.
 
 server mode! oh shit, how to do that?
 
@@ -41,7 +42,6 @@ expand to make it handle more than two
 	either create multi-versions (array?) of the twoxxx functions, or expose them
 	fix the polLoop so that it handles a read returning 0 by removing the fd!
 		perhaps it needs to remvoe the OPPOSITE side's fd? why is this broken?
-
 
 create a DIEUSAGE macro?
 
