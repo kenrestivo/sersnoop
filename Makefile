@@ -60,7 +60,7 @@ servtest: sersnoop
 	./sersnoop -a ts:23 -b 4242
 
 dumptest: sersnoop
-	./sersnoop -D
+	./sersnoop -d 2 -D 
 
 
 selecttest: sersnoop

@@ -1,12 +1,8 @@
 TODO- serial snooper
 
 the decode display is butt-ugly. works fine for short packets but for long ones it's unreadable. 
-	d-oh. my % formula is wrong
-		STUCK: look it up somewhere, i've doen it before
-			kcurses? sim?
-	does the column width show up in any envs?
-		nope, but you can ioctl or cfget for it!!!
-	
+	now put the ascii in there too
+		problem! if i just have one or two bytes, i get nothing. oops
 
 make the network socket code portable
 
@@ -56,6 +52,11 @@ cfmakeraw() instead of all that manual flag-setting
 
 	try termtest on netbsd
 		STUCK: need to fix some of the includes/ifdefs/defines
+
+make it dynamic?
+	non-trivial
+	does the column width show up in any envs?
+		nope, but you can ioctl or cfget for it!!!
 
 expand to make it handle more than two
 	change the command line parsing instead of -a -b, just put them as optind's
@@ -173,3 +174,12 @@ server mode! oh shit, bind(), listen(), accept() etc.
 	i need to make it more xxd-like
 		SOLUTION: simple. just assume 80 col for now, then % == 0 test
 			i know i've done this before
+	d-oh. my % formula is wrong
+		STUCK: look it up somewhere, i've doen it before
+			kcurses? sim?
+			DUH. it's a simple < MAX
+		tricky!
+			one, i've got stripunreadables set to work on a whole block
+			two, how do i know? a flag?
+				SOLUTION: do the stripping in hexdump, and use a damn flag
+					i had to usea pointer flag because len 0 was problematic

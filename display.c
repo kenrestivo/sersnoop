@@ -28,7 +28,7 @@
 #include <kenmacros.h>
 
 
-#define MAXCOL 80
+#define MAXBYTESLINE  16
 
 
 /******************
@@ -64,25 +64,35 @@ stripUnreadables(char * dirty, char * clean, int len)
 static void
 hexDump(unsigned char * buf, int len)
 {
-	char posfmt[]= "\n    0x%0.4x: ";
+	char posfmt[]= "\n    0x%0.4x: "; /* maximum 65535 before rolling ouver */
 	char bytefmt[] = "%0.2x%0.2x ";
-	int col = 0; /* position on the screen */
+	int bytesline = 0; /* position on the screen */
 	int pos = 0; /* position in the buffer */
+	char * asciistart = NULL; /* a pointer because index 0 is problematic */
+	char cleanbuf[MAXBYTESLINE];
 	
 	while(pos < len){
-		if(col == 0 ||  col % MAXCOL == 0 ){
-				/* print the header */
-				printf(posfmt, pos);
-				/* fmt has \n in it, so we are resetting the column = here. */
-				col = 12; /* 4 space, 2 0x, 4 digits , 1 colon, 1 space*/
+		if(bytesline == 0 || bytesline >= MAXBYTESLINE){
+			/* print the header */
+			printf(posfmt, pos);
+			/* fmt has \n in it, so we are resetting the column = here. */
+			bytesline = 0;
+			asciistart = &buf[pos];
 		}
 	
 		/* print 2 bytes */
 		printf(bytefmt, buf[pos++], buf[pos++]);
-		col += 5; /* 4 chars for 2 bytes, plus space */
-		DPRINTF(1, "pos = %d, col = %d,  col %% maxcol = %d\n", 
-					pos, col, col % MAXCOL);
-	}
+		bytesline += 2;
+		DPRINTF(2, "pos = %d, bytesline = %d\n", 
+					pos, bytesline);
+
+		/* XXX i fucking hate this hack. i hate state machines. but it works. */
+		if(bytesline >= MAXBYTESLINE && asciistart != NULL){
+			stripUnreadables(asciistart, cleanbuf, MAXBYTESLINE);
+			printf("  %.*s", MAXBYTESLINE-1, cleanbuf);
+			asciistart = NULL;
+		}
+	} /* end while */
 
 	putchar('\n'); /* XXX redundant? */
 
@@ -119,16 +129,11 @@ dumpTest(int which)
 int
 display(int sourcefd, char * buf, int len)
 {
-	char * clean = NULL;
 	static int lastsource = -1;
 	static int total = 0;
 	struct timeval tv;
 
 	RETCALL(gettimeofday(&tv, NULL));
-
-	NULLCALL(clean =(char *)malloc(len));
-
-	stripUnreadables(buf, clean, len);
 
 	if(lastsource != sourcefd){
 		printf("\ttotal %d\n--------\n", total);
@@ -136,9 +141,9 @@ display(int sourcefd, char * buf, int len)
 		total = 0;
 	}
 
-	printf("%d:%d %s: (%d) <%.*s>\n", 
+	printf("%d:%d %s: 0x%0.4X (%d)\n", 
 		(int)tv.tv_sec, (int)tv.tv_usec, 
-		ttyname(sourcefd), len,  len, clean);
+		ttyname(sourcefd), len , len );
 
 	hexDump(buf, len);
 
