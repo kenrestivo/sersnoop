@@ -1,12 +1,5 @@
 TODO- serial snooper
 
-set up and open tty
-	lift from chotplay/src/tty.c
-
-set up and open pty
-	lift from termtest
-	use only the linux version, for now anyway.
-
 write a simple poll/select loop to read from both/either
 	there's one in sockclient/server isn't there?
 
@@ -27,3 +20,11 @@ NOWHERE
 DONE
 
 		ack! /usr/include/asm/ioctls.h. uses TIOCGPTN not TIOCGNAME i.e. SYSV
+set up and open tty
+	lift from chotplay/src/tty.c
+		DONE
+set up and open pty
+	lift from termtest
+	use only the linux version, for now anyway.
+		DONE
+

@@ -23,7 +23,7 @@ KENINCL=/mnt/kens/ki/is/c/kenincl
 #build stuff
 TARGETS= sersnoop
 CFLAGS:= -g -Wall  -O3  -I/lib/modules/`uname -r`/build/include -I$(KENINCL)
-OBJS:= sersnoop.o 
+sersnoop_OBJS:= sersnoop.o pollcat.o serttys.o
 
 #
 
@@ -31,10 +31,10 @@ OBJS:= sersnoop.o
 all: $(TARGETS)
 
 clean::
-	rm -f ${TARGET} ${OBJS} core
+	rm -f $(TARGETS) $(sersnoop_OBJS) core
 
-sersnoop: sersnoop.o
-	${CC} ${CFLAGS} ${LDFLAGS} -o  $@ sersnoop.o
+sersnoop: $(sersnoop_OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o  $@ $(sersnoop_OBJS)
 
 test: sersnoop
 	./sersnoop
