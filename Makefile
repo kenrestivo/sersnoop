@@ -21,7 +21,7 @@
 #names
 PACKAGE=sersnoop
 SRCDIR=sersnoop
-REL=0.2c
+REL=0.2
 
 #dirs
 DISTDIR=/mnt/www/restivo/projects/$(PACKAGE)/src
@@ -45,6 +45,8 @@ clean::
 sersnoop: $(sersnoop_OBJS) $(sersnoop_HEADERS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o  $@ $(sersnoop_OBJS)
 
+#test targets
+
 test: sersnoop
 	./sersnoop -a/dev/ttyS1:38400 -b pty
 
@@ -60,12 +62,16 @@ nettest: sersnoop
 servtest: sersnoop
 	./sersnoop -a ts:23 -b 4242
 
+servtty: sersnoop
+	./sersnoop -a /dev/ttyS0:9600 -b 4242
+
 dumptest: sersnoop
 	./sersnoop -d 2 -D 
 
-
 selecttest: sersnoop
 	./sersnoop -s -a/dev/ttyS1:38400 -b pty
+
+#debug and utility targets
 
 debug: sersnoop
 	@gdb ./sersnoop

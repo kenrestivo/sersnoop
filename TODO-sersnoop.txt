@@ -1,25 +1,11 @@
 TODO- serial snooper
 
-
 make the network socket code portable
 
 autoconf 
 
 ----------------
 STUCK
-
-pollLoop() is still fucked. 
-	seems like poll() returns if an fd closes, but processInput wigs
-		STUCK: read the docs, poll, etc. find out what's supposed to happen
-			a network socket WILL return a read of 0 if it is closed
-				true of other fd's too?
-		create an exception handling routine that removeFd's etc
-	processInput() only does one fd at a time. prolly not good
-		not sure about bcast(), if i need to flush readers b4 writing?
-			STUCK: read docs
-
-should i be using O_NDELAY on tty when i'm using select/poll?? good idea?
-	STUCK: read up on this
 
 
 make the debug code optional? so i can run it as a daemon?
@@ -30,9 +16,17 @@ make the debug code optional? so i can run it as a daemon?
 	try it with sendfile? is it any faster/more responsive? if i don't need debug.
 
 fancy formatting. 
-	same in ascii. yes.
+	right-justify the ascii on short packets
+		non-trivial. would require keeping count of cols pooted out.
+			i.e. with each byte sent.. hmm. maybe that's not impossible...
+	breaks after 8 bytes, in ascii. yes.
 		non-trivial. i'd have to do it in stripUnreadables, AND make sure there's extra bytes to cover it, meaning malloc, it's gettin ugly
 
+
+poll still returns with -1 data, if my pty went away
+	exception? or is that just for network sockets?
+	do i need to check write before writing, in bcast?
+		non-trivial change. would need to put write into the poll loop
 
 ----------------
 BELOW THE LINE
@@ -218,4 +212,21 @@ the decode display is butt-ugly.
 hmm. some way to glean the socket host/port from an fd/sd?
 	trash all ttyname() and replace with lookupName()
 		DONE
+
+
+pollLoop() is still fucked. 
+	seems like poll() returns if an fd closes, but processInput wigs
+		STUCK: read the docs, poll, etc. find out what's supposed to happen
+			a network socket WILL return a read of 0 if it is closed
+				true of other fd's too?
+		create an exception handling routine that removeFd's etc
+	hmm. it looks like it's trying to read from fd -1. huh?
+		fix this dammit.
+	processInput() only does one fd at a time. prolly not good
+		not sure about bcast(), if i need to flush readers b4 writing?
+			STUCK: read docs
+		SOLUTION: duh. i had NDELAY on serial tty. that was stupid. ok now.
+should i be using O_NDELAY on tty when i'm using select/poll?? good idea?
+	 read up on this
+		SOLUTION: i'm not using it, since i'm polling instead.
 

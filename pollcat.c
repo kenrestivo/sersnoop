@@ -122,6 +122,9 @@ processInput(struct pollfd * pfds, int numFds)
 	int i = 0;
 
 	for (i = 0; i < numFds; i++){
+		if(pfds[i].fd <0 ){
+			continue;
+		}
 		if(pfds[i].revents & POLLIN ){
 			/* i can't while() here, or it all hangs. */
 			rcount = read(pfds[i].fd, buf, sizeof(buf)) ;
@@ -135,16 +138,18 @@ processInput(struct pollfd * pfds, int numFds)
 			} else if (rcount < 0 ) {
 				perror("read error in poll:processInput\n");
 				return -1;
-			} else { /* zero */
-				fprintf(stderr,  "processInput(): connection closed by peer\n");
+			} else { /* zero, read over, connection closed  */
+				DPRINTF(1, "processInput(): connection %s closed on %d\n", 
+						lookupName(pfds[i].fd), pfds[i].fd);
+				return pfds[i].fd;
 			}
 		} /* end if */
 	} /* end for */
 
 	/* XXX this is fucked */
-	DPRINTF(1, "reading from %d (%s): nobody had data??\n", 
+	DPRINTF(2, "reading from %d (%s): nobody had data??\n", 
 		pfds[i].fd, lookupName(pfds[i].fd));
-	return(1);
+	return(0);
 
 } /* END PROCESSINPUT */
 
@@ -160,7 +165,8 @@ pollLoop(struct pollfd * pfds, int pfdCount)
 	nfds_t foundCount; /* don't be scared, it's just a uint */
 	int res = 0;
 
-	DPRINTF(1, "pollLoop(): starting poll loop with total of %d fd's\n", pfdCount);
+	DPRINTF(1, "pollLoop(): starting poll loop with total %d fd's\n", 
+			pfdCount);
 
 	while(pfdCount > 0){
 		if(shutdownFlag != 0){
@@ -169,14 +175,14 @@ pollLoop(struct pollfd * pfds, int pfdCount)
 		SYSCALL(foundCount = poll(pfds, pfdCount, INFTIM));
 		assert(foundCount > 0); /* with INFTIM, should neer have 0 */
 
-		/* XXX poll returns if a fd closes, and processInput freaks out */
-
 		RETCALL(res = processInput(pfds, pfdCount));
-		if(res > 0){
-			DPRINTF(1, "pollLoop(): connection %s closed on %d\n", 
-					lookupName(res), res);
+		if(res != 0){
 			/* XXX shoudl be? removePfd(pfds, &pfdCount, res); */
-			return(-1); 
+			DPRINTF(1, "pollLoop(): got exit code of %d from processInput()\n",
+				res);
+			removePfd(pfds, &pfdCount, res); 
+			/* TODO: if it's a network socket, close it? how? */
+			/* TODO: re-open it? */
 		}
 
 	} /* end while */

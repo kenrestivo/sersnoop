@@ -138,8 +138,8 @@ opentty(char *path )
 
 	DPRINTF(1, "opentty(): opening %s with baudcode 0x%X\n", mytty, baudcode);
 
-	/* XXX weird... i'm using select/poll, should i use NDELAY?? */
-	NRETCALL(fd = open(mytty, O_RDWR | O_NDELAY ) ) ;
+	/* i'm using select/poll, so no NDELAY */
+	NRETCALL(fd = open(mytty, O_RDWR ) ) ;
 
 	NRETCALL(changespeed(fd, baudcode) );
 
