@@ -101,8 +101,8 @@ processInput(struct pollfd * pfds, int numFds)
 
 	for (i = 0; i < numFds; i++){
 		if(pfds[i].revents & POLLIN ){
-			/* XXX  should i while() here, or just grab one chunk and leave? */
-			while ( (rcount = read(pfds[i].fd, buf, sizeof(buf)) ) >0 ){
+			/* i can't while() here, or it all hangs. */
+			if ( (rcount = read(pfds[i].fd, buf, sizeof(buf)) ) >0 ){
 
 				/* shout it to all the others */
 				bcast(buf, rcount, pfds[i].fd, pfds, numFds);
@@ -113,16 +113,17 @@ processInput(struct pollfd * pfds, int numFds)
 				#else
 				RETCALL(display( ttyname(pfds[i].fd), buf, rcount) );
 				#endif /* __SVR4 */
+				return 0;
 
-			} /* end while */
-#if 0
-			if(rcount < 0){
+			} else if (rcount < 0 ) {
 				perror("read error in poll:processInput\n");
+			} else {
+				DPRINTF(1, "wtf? read of 0?\n");
 			}
-#endif
 		} /* end if */
 	} /* end for */
-	return 0;
+
+	return(-1);
 
 } /* END PROCESSINPUT */
 
