@@ -73,6 +73,7 @@ stripUnreadables(char * dirty, char * clean, int len)
 int
 printLine(unsigned char * linebuf, int linelen, int mainpos)
 {
+	/* i specify these len's manually. strlen does NOT work on fmt strings */
 	#define POSFMTLEN 12
 	char posfmt[]= "\n    0x%0.4x: "; /* maximum 65535 before rolling over */
 	#define BYTEFMTLEN 2
@@ -129,7 +130,9 @@ printLine(unsigned char * linebuf, int linelen, int mainpos)
 
 /******************
 	HEXDUMP
-	like the man says, dump the hex ;-)
+	chops the buffer up into lines of MAXBYESLINE, ("chop a line now")
+	and prints one line at a time
+	everything goes to stdout for now
 ******************/
 static void
 hexDump(unsigned char * buf, int len)

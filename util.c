@@ -34,23 +34,29 @@ int
 splitColon(char * path, char ** name)
 {
 	char * colon = NULL;
+	char * mangle = NULL;
+
+	/* bsd wants it this way. no strndup here dude */
+	if( (mangle = strdup(path)) == NULL ){
+		fprintf(stderr, "splitColon(): strdup is out of memory\n");
+		return(-1);
+	}
 
 	DPRINTF(1, "splitColon(): parsing out %s\n", path);
-	if( (colon = strchr(path, ':')) == NULL){
+	if( (colon = strchr(mangle, ':')) == NULL){
 		fprintf(stderr, "splitColon(): device must be in form 'string:number'\n");
 		return(-1);
 	}	
 
-	/* bsd wants this */
-	if( asprintf(name, path,colon - path ) < 1 ){
-#if 0
-	if( (*name = strndup(path,colon - path )) == NULL ){
-#endif /* 0 */
-		fprintf(stderr, "splitColon(): strndup is out of memory\n");
-		return(-1);
-	}
-	DPRINTF(1, "splitColon(): string portion is %s\n", *name);
+	/* chomp it */
+	*colon = '\0';
+
+	DPRINTF(1, "splitColon(): string portion is %s\n", mangle);
+
+	/* return values, name gets returned in args, port as retval */
+	*name = mangle;
 	return (atoi(colon + 1));
+
 }/* END SPLITCOLON */
 
 /* EOF */

@@ -48,13 +48,8 @@ processInput(int * virtFd, int numFds, fd_set * foundFds)
 		/* 	TODO: copy/paste from pollcat.c!! */
 			while ( (rcount = read(virtFd[i], buf, sizeof(buf)) ) >0 ){
 				/* buncha UGLY debug stuff */
-				#ifdef __SVR4
-				DPRINTF(1, "processInput(): got %d bytes from fd %d: ",
-					rcount, virtFd[i]  );
-				#else
 				DPRINTF(1, "processInput(): got %d bytes from fd %d, %s: ",
 					rcount, virtFd[i], lookupName(virtFd[i]) );
-				#endif /* __SVR4 */
 
 				if(write(1, buf, rcount) < 0){
 					fprintf(stderr, "processInput(): write problem\n");

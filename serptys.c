@@ -148,11 +148,11 @@ getPty(int ptmx)
 {
 
 	if(ptmx){
-#ifdef TIOCGPTN
+#ifdef TIOCGPTN /* i hate ifdefs too */
 		return(linuxGetPty());	
 #else
 	DPRINTF(1, "getPty(): can't use ptmx on this system\n");
-	return(-1);
+	return(bsdGetPty());
 #endif 
 	} else {
 		return(bsdGetPty());

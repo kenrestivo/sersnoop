@@ -144,6 +144,7 @@ openSock(char * path)
 	/* resolve the address of the machine i'm trying to reach */
 	assert(destHost != NULL && destPort >0 );
 	if( (destHe = gethostbyname(destHost) ) == NULL){
+		printf("Connection to port %d on %s failed: ", destPort, destHost);
 		switch(h_errno) {
 			case HOST_NOT_FOUND:
 				fputs("Host not found.\n", stderr);

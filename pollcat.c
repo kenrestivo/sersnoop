@@ -86,6 +86,7 @@ static void removePfd(struct pollfd *pfds, int * pfdCount, int fd)
     WRAPPEDWRITE
     a very ugly function to wrap the error conditions around write
     ok, it's overkill, since most of these packets are tiny, but whatever.
+	i'll prolly need this for ssl anyway
 ******************/
 static int
 wrappedWrite(int fd, void * buf, size_t count)
@@ -163,7 +164,8 @@ processInput(struct pollfd * pfds, int numFds)
 		}
 		if(pfds[i].revents & POLLIN ){
 			/* ok. i don't wrap reads here, because i don't care 
-				if i miss it, fuck it, i'll get it next time around */
+				if i miss it, fuck it, i'll get it next time around 
+				XXX but, i'll need to wrap them for ssl. damn. */
 			rcount = read(pfds[i].fd, buf, sizeof(buf)) ;
 			if ( rcount > 0 ){
 				/* shout it to all the others */

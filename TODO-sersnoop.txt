@@ -2,8 +2,8 @@ TODO- serial snooper
 
 add ssl support. yeah, right.
 	STUCK: go get a local copy of the ssl docs and tutorials. duh.
-	man ssl! it officially documents the api
-		read the online version with hyperlinks.
+		start with a very basic connection
+			use set_fd instead of all that bio shit
 	read soume source that uses ssl and poll/select
 		sslproxy simple shovel() function. i like. can i make use of it?
 		gabber!?
@@ -16,16 +16,17 @@ add ssl support. yeah, right.
 					that does all 3: v2, v3, and tls1
 			set_options? SSL_OP_ALL (bug workarounds)
 			do i need all this certificate loading and password-callback shit?	
+				prolly not, if you use unencrypted pem's
 			do i need to set the cipher list?
 			this is done ONCE per program. i need to make sure.
-		call my regular opensock stuff
+		call my regular opensock stuff: ssl lib does *not* open sockets
 		set the modes on the fd (i.e. nonblocking if i use select)
 		create a new ssl object, and attach the open socket to it, set_fd
 		connect (or accept)		
 			check get_error, may have to redo it?
 		no big certificate checking. or just put in check_cert as a debug?
-		add the SSL structs to the fdstruct object
-		in server mode i'll have to load a cert. possibly client too if i present auth!
+		in server mode i'll have to load a cert. 
+			possibly client too if i present auth!
 	hellacious hacks to pollcat.c 
 		read-write. 
 			oh shit! i'll need to wrap my writes AND deal with ssl weirdness.
@@ -57,7 +58,7 @@ misc ?
 	do i need to check the alert strings?
 
 notes
-	der is asn.1 pem is base64 encoded standard cert.
+	der is asn.1, pem is base64 encoded standard cert.
 	nice. get_peer_cert_chain(), you can find out the other guy's chain
 
 ----------------
@@ -138,6 +139,10 @@ fancy formatting.
 ----------------
 NOWHERE
 
+		or does set_fd set up bio for me already?
+			NOWHERE: set_fd is just fine, standard bio is just fine, if you're not using puts/gets. if you are, then BIO_f_buffer is needed
+			STUCK: oh shit, i still don't have the ssl docs locally! doh
+				DUMBASS! man ssl. fuckwit. and, um, read the .h files!
 		docs sound simple: just use SSL_read/write! NOWHERE: they're WRONG
 		stunnel WAY too complicated
 	fix the polLoop so that it handles a read returning 0 by removing the fd!
@@ -318,3 +323,15 @@ fix the getopts: die if no args. DONE
 				SOLUTION: i don't need BIO, if i use fd, the bio is automatically done
 	strndup. grr. how bout asprintf?
 		SOLUTION: that works just fine
+asprintf was totally fucked
+	SOLUTION: doh. i created my own little strundup here.
+
+asprintf was totally fucked
+	SOLUTION: doh. i created my own little strundup here.
+
+		add the SSL structs to the fdstruct object
+			DONE
+	man ssl! it officially documents the api
+		read the online version with hyperlinks. IT ROCKS!
+	hmm. should i use bio's? so i can read/write bytes not records?
+		DONE. set_fd does this

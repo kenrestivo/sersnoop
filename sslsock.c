@@ -45,6 +45,10 @@ sslPerror(char *  str)
 }/* END  SSLPERROR */
 
 
+/* TODO: write sigpipe handler, that reports the premature close, nonfatal */
+
+/* TODO: close function SSL_shutdown() */
+
 
 /******************
 	NEWCTX
@@ -69,27 +73,10 @@ newCTX(void)
     signal(SIGPIPE,sigpipe_handle);
 
     /* Create our context*/
-    meth=SSLv3_method();
+    meth=SSLv23_method();
     ctx=SSL_CTX_new(meth);
 
-    /* Load our keys and certificates*/
-    if(!(SSL_CTX_use_certificate_file(ctx,keyfile,SSL_FILETYPE_PEM)))
-      sslPerror("Couldn't read certificate file");
-
-	/* XXX this is bullshit. i'm not using private keys */
-    SSL_CTX_set_default_passwd_cb(ctx,password_cb);
-
-    if(!(SSL_CTX_use_PrivateKey_file(ctx,keyfile,SSL_FILETYPE_PEM)))
-      sslPerror("Couldn't read key file");
-
-    /* Load the CAs we trust*/
-    if(!(SSL_CTX_load_verify_locations(ctx,calist,0)))
-      sslPerror("Couldn't read CA list");
-    SSL_CTX_set_verify_depth(ctx,1);
-
-    /* XXX use /dev/random instead? Load randomness */
-    if(!(RAND_load_file(RND,1024*1024)))
-      sslPerror("Couldn't load randomness");
+	/* NOTE: this will only work on systems that have a /dev/urandom */
 
     return ctx;
 
@@ -105,8 +92,7 @@ openSSLSock (char * path)
 {
 	struct fdstruct * lfd = NULL;
 
-	NULLCALL(lfd = (struct fdstruct *)malloc(sizeof(struct fdstruct)));
-
+	/* remember, this malloc's the struct lfd, and returns it */
 	lfd = openSock(path);
 
 	if(!ctx){
@@ -114,10 +100,12 @@ openSSLSock (char * path)
 	}
 
 	lfd->ssl = SSL_new(ctx);
+    if(SSL_set_fd(lfd->ssl, lfd->fd) < 1)
+      berr_exit("main: SSL set fd error");
+	
 
-    sbio=BIO_new_socket(lfd->fd,BIO_NOCLOSE);
-    SSL_set_bio(ssl,sbio,sbio); /* XXX um, do i want/need this? */
-    if(SSL_connect(lfd->ssl)<=0)
+	/* XXX i'm pretty sure i need the standard ssl connect_fd here */
+    if(SSL_connect(lfd->ssl) <= 0)
       berr_exit("main: SSL connect error");
     check_cert_chain(lfd->ssl,lfd->name /*XXX grab the hostname portion */ );
 

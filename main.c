@@ -148,7 +148,7 @@ main(int argc, char ** argv)
 		usage();
 	}
 
-	/* opts and such */
+	/* opts and such. order is significant. */
 	while( (c= getopt(argc, argv, "phd:a:b:sD")) != -1) {
 		switch(c){
 			case 'd': /* first thing i want to know about */

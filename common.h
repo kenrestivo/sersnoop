@@ -31,7 +31,7 @@ struct fdstruct {
 		int fd; /* the fd that has been open */
 		char * name; /* for the display function to use */
 #ifdef USE_SSL
-		SSL * ssl;
+		SSL * ssl; /* the ssl object associated with this connection */
 #endif /* USE_SSL */
 };
 

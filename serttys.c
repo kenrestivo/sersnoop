@@ -33,7 +33,8 @@
 
 /******************
 	DECODEBAUD
-	takes in a reg'lar number and returns the weirdo Bxxx code needed for changespeed
+	takes in a reg'lar number and returns the weirdo Bxxx code 
+	needed for changespeed
 ******************/
 static int
 decodeBaud(int baud)
