@@ -27,6 +27,7 @@
 #include <sys/ioctl.h>
 #include <kenmacros.h>
 #include "util.h"
+#include "common.h"
 
 /* DEFS */
 
@@ -114,34 +115,43 @@ changespeed( int fd, int baud)
 /******************
 	OPENTTY
 	opens up a tty in raw mode
+	returns an fdstruct with fd and name.
+		NOTE caller must free this thing
 ******************/
-int
+struct fdstruct *
 opentty(char *path )
 {
 	int fd;
 	char * ttyname = NULL;
 	int humanbaud = 0 ;
 	int baudcode = 0 ;
+	struct fdstruct * lfd = NULL;
+
+	NULLCALL(lfd = (struct fdstruct *)malloc(sizeof(struct fdstruct)));
 
 	/* split out the options */
-	RETCALL( (humanbaud = splitColon(path, &ttyname)) );
+	NRETCALL( (humanbaud = splitColon(path, &ttyname)) );
 
 	/* decode baud */
-	RETCALL(baudcode = decodeBaud(humanbaud));
+	NRETCALL(baudcode = decodeBaud(humanbaud));
 	
 
 	DPRINTF(1, "opentty(): opening %s with baudcode 0x%X\n", ttyname, baudcode);
 
 	/* XXX weird... i'm using select/poll, should i use NDELAY?? */
-	RETCALL(fd = open(ttyname, O_RDWR | O_NDELAY ) ) ;
+	NRETCALL(fd = open(ttyname, O_RDWR | O_NDELAY ) ) ;
 
-	RETCALL(changespeed(fd, baudcode) );
+	NRETCALL(changespeed(fd, baudcode) );
 
 	DPRINTF(1, "opentty(): opened %s as fd %d\n", ttyname, fd);
 
 	free(ttyname);
 
-	return(fd);
+	/* note, the caller of opentty() must free this later on */
+	lfd->name = strdup(path);
+	lfd->fd = fd;
+
+	return(lfd);
 }/* END OPENTTY  */
 
 /* EOF */

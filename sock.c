@@ -32,6 +32,7 @@
 #include <kenmacros.h>
 #include "util.h"
 #include "sock.h"
+#include "common.h"
 
 
 #define MAXBUF  1024
@@ -45,7 +46,7 @@ extern int h_errno;
 	OPENSERVER
 	lifted from sockettest
 ******************/
-int
+struct fdstruct *
 openServer(char * path)
 {
     struct sockaddr_in recvSa;   
@@ -56,12 +57,16 @@ openServer(char * path)
 	int ad = -1;
 	socklen_t saLen = sizeof(recvSa);
 	socklen_t peerLen = sizeof(peerSa);
+	char * pn = NULL;
+	struct fdstruct * lfd = NULL;
+
+	NULLCALL(lfd = (struct fdstruct *)malloc(sizeof(struct fdstruct)));
 
 	/* get numeric port and error czech */
 	port = strtoul(path, NULL, 0);
 	if(port <10 || port > 65535){
 		fprintf(stderr, "%d is a bad port number\n", port);
-		return -1;
+		return NULL;
 	}
 
 	DPRINTF(1, "openServer(): opening socket listener on %d\n", port);
@@ -87,13 +92,20 @@ openServer(char * path)
 	SYSCALL((ad = accept(sd, (struct sockaddr *)&recvSa, &saLen)));
 
 	SYSCALL(getpeername(ad, &peerSa, &peerLen));
+	/* note, the caller must free this later on */
+	/* TODO: port number in here too, please */
+	NULLCALL(pn = strdup(inet_ntoa(peerSa.sin_addr)));
 	DPRINTF(1, "got connection from %s on %d\n", 
-		inet_ntoa(peerSa.sin_addr), 
+		pn, 
 		ntohs(peerSa.sin_port));
 
 	/* TODO: rip the gethostbyaddr() stuff from my old gethostfun program  */
 
-	return ad;
+
+	lfd->name = pn;
+	lfd->fd = ad;
+
+	return lfd;
 }/* END OPENSERVER */
 
 
@@ -101,8 +113,9 @@ openServer(char * path)
 /******************
 	OPENSOCK
 	lifted from library program
+	returns the fdstruct, or, NULL if error
 ******************/
-int 
+struct fdstruct *
 openSock(char * path)
 {
     /* this is stupid. do with structs, as in the other one */
@@ -116,8 +129,11 @@ openSock(char * path)
 	int i = 0;
 	int sd = -1;
 	int flag = 1;
+	struct fdstruct * lfd = NULL;
 
-	RETCALL( destPort = splitColon(path, &destHost) );
+	NULLCALL(lfd = (struct fdstruct *)malloc(sizeof(struct fdstruct)));
+
+	NRETCALL( destPort = splitColon(path, &destHost) );
 
 	/* zero out bits */
     memset(&destSa, 0, sizeof(destSa)); 
@@ -142,10 +158,11 @@ openSock(char * path)
 			default: fputs("Unknown error.\n", stderr);
 				break;
 		}
-		return -1;
+		return NULL;
 	}
 
-	RETCALL (sd = socket(PF_INET, SOCK_STREAM, 0)) ;
+	NRETCALL (sd = socket(PF_INET, SOCK_STREAM, 0)) ;
+
 
 	/* obnoxiousness */
 	tempintptr =  (unsigned long int*) *destHe->h_addr_list;
@@ -168,7 +185,7 @@ openSock(char * path)
 			destHost, destPort, strerror(errno));
 		if (i++ > MAXTRIES){
 			fprintf(stderr, "after %d tries, gave up. argh.\n", i);
-			return -1;
+			return NULL;
 		}
 		sleep(2);
 	}
@@ -176,7 +193,7 @@ openSock(char * path)
 		destHost, destPort);
 
 #ifdef IPPROTO_TCP
-	RETCALL(setsockopt(	sd,            /* socket affected */
+	NRETCALL(setsockopt(	sd,            /* socket affected */
 					IPPROTO_TCP,     /* set option at TCP level */
 					TCP_NODELAY,     /* name of option */
 					(char *) &flag,  /* the cast is historical
@@ -185,8 +202,11 @@ openSock(char * path)
 	);
 #endif /* IPPROTO_TCP */
 
+	/* note, the caller must free this later on */
+	lfd->name = strdup(path);
+	lfd->fd = sd;
 
-	return sd;
+	return lfd;
 } /* END OPENSOCK */
 
 

@@ -22,11 +22,10 @@
 #ifndef POLLCAT_H
 #define POLLCAT_H
 
-
+#include "common.h"
 
 int
-twoWayPoll(int fd1, int fd2);
-
+twoWayPoll(struct fdstruct ** lfds);
 
 
 

@@ -34,12 +34,15 @@
 #include "sig.h"
 #include "selectloop.h"
 #include "sock.h"
+#include "display.h"
+#include "common.h"
 
 /* GLOBS */
 int debug = 1;
 extern char *optarg;
 extern int optind, opterr, optopt;
 int ptmx ; /* annoying, i hate having getopts options as globs. oh well */
+struct fdstruct * gfds[3];  /* null-term array of structs. */
      
 
 /******************
@@ -47,7 +50,7 @@ int ptmx ; /* annoying, i hate having getopts options as globs. oh well */
 	calls the relevant open functions
 	the open functions must parse out the : if need be
 ******************/
-int
+struct fdstruct *
 parseDevice(char * path)
 {
 	if(*path == '/'){
@@ -96,12 +99,12 @@ usage(){
 int
 main(int argc, char ** argv)
 {
-	int devAfd = -1;	
-	int devBfd = -1;	
 	int rv = 0;
 	int sel = 0;
 	int c;
+	struct fdstruct ** p = NULL;
 
+	memset(&gfds, 0, sizeof(gfds)); /* clear the array, must be 0 terminated! */
 
 	/* opts and such */
 	while( (c= getopt(argc, argv, "pd:a:b:sD")) != -1) {
@@ -118,10 +121,10 @@ main(int argc, char ** argv)
 				ptmx = 1;
 				break;
 			case 'a':
-				RETCALL(devAfd = parseDevice(optarg));
+				NULLCALL(gfds[0] = parseDevice(optarg));
 				break;
 			case 'b':
-				RETCALL(devBfd = parseDevice(optarg));
+				NULLCALL(gfds[1] = parseDevice(optarg));
 				break;
 			case 's':
 				sel= 1;
@@ -133,19 +136,27 @@ main(int argc, char ** argv)
 		} /* end switch */
 	} /* end while */
 	
-	/* make sure the user specified all the required fields */
-	if(devBfd < 0 || devAfd < 0){
-		usage();
+	/* XXX redundant? */
+	for(p = gfds; *p != NULL; p++){
+		if( (*p)->fd < 0){
+			usage();
+		}
 	}
 
 	/* oh, why not */
 	signalSetup();
 
 	/* and now the loop de loop */
-	rv = sel ? twoWaySelect(devAfd, devBfd) : twoWayPoll(devAfd, devBfd); 
+	rv = sel ? twoWaySelect(gfds) : twoWayPoll(gfds); 
 	
-	SYSCALL(close(devAfd));
-	SYSCALL(close(devBfd));
+	/* tidy up */
+	/* TODO: move this into signal handler? */
+	for(p = gfds; *p != NULL; p++){
+		SYSCALL(close((*p)->fd));
+		free((*p)->name);
+		free(*p);
+	}
+
 	return rv;
 }/* END MAIN */
 

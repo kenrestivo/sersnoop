@@ -22,8 +22,9 @@
 #ifndef SERTTYS_H
 #define SERTTYS_H
 
+#include "common.h"
 
-int
+struct fdstruct *
 opentty(char *path );
 
 

@@ -27,6 +27,7 @@
 #include <sys/poll.h>
 #include <kenmacros.h>
 #include "display.h"
+#include "common.h"
 
 /* DEFS */
 #define POLLTIMEOUT 5
@@ -93,6 +94,7 @@ bcast(char * buf, int len, int fromfd, struct pollfd * pfds, int numfds)
 
 	while(i  < numfds){
 		if(pfds[i].fd != fromfd){
+			/* TODO: replace this ttyname() with a lookup in the global gfds? */
 			DPRINTF(2, "bcast(): shouting out to my homey %s on fd %d\n",
 				ttyname(pfds[i].fd), pfds[i].fd);
 			/* XXX this might well fail if i don't have NDELAY. 
@@ -190,19 +192,20 @@ pollLoop(struct pollfd * pfds, int pfdCount)
 	point to point data
 ******************/
 int
-twoWayPoll(int fd1, int fd2)
+twoWayPoll(struct fdstruct ** lfds)
 {
+	/* TODO: this is duplication. create a (void *) in fdstruct, and use it here */
 	static struct pollfd pfds[3];
 	static int pfdCount = 0; /* used by the newpfd utility function */
-
-	SYSCALL(!isatty(fd1));
-	SYSCALL(!isatty(fd2));
+	struct fdstruct ** p;
 
    /* i have to initialize this first, since i don't do it in global decl */
     memset(pfds, -1, sizeof(pfds)); /* -1 is the skip flag for poll */
 
-    newPfd(pfds, &pfdCount, fd1, POLLIN);
-    newPfd(pfds, &pfdCount, fd2, POLLIN);
+	for(p = lfds; *p != NULL; p++){
+		SYSCALL(!isatty((*p)->fd));
+		newPfd(pfds, &pfdCount, (*p)->fd, POLLIN);
+	}
 
 	pollLoop(pfds, pfdCount);
 

@@ -29,6 +29,7 @@
 #include <errno.h>
 #include <sys/ioctl.h>
 #include <kenmacros.h>
+#include "common.h"
 
 /* DEFS */
 #define SLAVELEN 32
@@ -39,21 +40,25 @@
 	XXX this appears to be VERY linux-specific and non portable
 	it also requires devpts fs in kernel and in in /etc/fstab
 	puts the name of the slave term into *slaveName
-	returns the fd or -1 if error
+	returns the fdstruct or NULL if error
 ******************************/
 #ifdef TIOCGPTN
-static int 
+static struct fdstruct *
 linuxGetPty(void)
 {
     int masterFd = 0 ;
 	int slaveNum = -1;
 	char * slaveName = NULL;
+	struct fdstruct * lfd = NULL;
+
+	/* it's a dynamic thing */
+	NULLCALL(lfd = (struct fdstruct *)malloc(sizeof(struct fdstruct)));
 		
 	/* first open a master pty (/dev/ptmx) */
-	RETCALL( masterFd = open("/dev/ptmx", O_RDWR)) ;
+	NRETCALL( masterFd = open("/dev/ptmx", O_RDWR)) ;
 		
 	/* get the number of the slave - ptsname */
-	RETCALL( ioctl(masterFd, TIOCGPTN, &slaveNum) );
+	NRETCALL( ioctl(masterFd, TIOCGPTN, &slaveNum) );
 
 
 	NULLCALL(slaveName = (char *)malloc(SLAVELEN));
@@ -62,9 +67,10 @@ linuxGetPty(void)
     DPRINTF(1, "linuxGetPty(): your pty is %s and the master is on fd %d\n",
         slaveName, masterFd);
 
-	free(slaveName);
+	lfd->fd = masterFd; /* yes, the master. remember, someone ELSE opens the slave */
+	lfd->name = slaveName; /* for all intents and purposes, user wants to know this */
 
-    return  masterFd;
+    return  lfd;
 } /* END LINUXGETPTY */
 #endif
 
@@ -75,7 +81,7 @@ linuxGetPty(void)
         name of slave pty to open, in input 
     note: this is portable, works with any bsd, linux, or solaris system
 ***************************/
-static int 
+static struct fdstruct *
 bsdGetPty(void)
 {
     /* TODO: is there any way to avoid overfloating the input string? 
@@ -87,6 +93,10 @@ bsdGetPty(void)
     char masterName[32] = "";
     char * slaveName = NULL;
     int masterFd = 0 ;
+	struct fdstruct * lfd = NULL;
+
+	/* it's a dynamic thing */
+	NULLCALL(lfd = (struct fdstruct *)malloc(sizeof(struct fdstruct)));
 
     /* get master */
     for(ltrp = ltrs; *ltrp != '\0'; ltrp++){
@@ -102,7 +112,7 @@ bsdGetPty(void)
     out:
     /* oops, end of the line, no tty's */
     if(*ltrp == '\0' && *nump == '\0'){
-        return -2;
+        return NULL;
     }
 
     /* if i'm still zero, or stuff is empty, something's wackie */
@@ -118,9 +128,10 @@ bsdGetPty(void)
     DPRINTF(1, "bsdGetPty(): your pty is %s and the master is %s open on fd %d\n",
         slaveName, ttyname(masterFd), masterFd);
 
-	free(slaveName);
+	lfd->fd = masterFd; /* yes, the master. remember, someone ELSE opens the slave */
+	lfd->name = slaveName; /* for all intents and purposes, user wants to know this */
 
-    return masterFd;
+    return lfd;
 
 } /* END BSDGETPTY */
 
@@ -132,7 +143,7 @@ bsdGetPty(void)
 	 TODO: put a proper configure.in test and choose based on that 
 	NOTE: all of these functions malloc *slaveName, you must free
 ***************************/
-int 
+struct fdstruct *
 getPty(int ptmx)
 {
 

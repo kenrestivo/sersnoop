@@ -25,6 +25,7 @@
 #include <ctype.h>
 #include <sys/time.h>
 #include <kenmacros.h>
+#include "common.h"
 
 
 #define MAXBYTESLINE  16
@@ -173,9 +174,9 @@ display(int sourcefd, char * buf, int len)
 		total = 0;
 	}
 
-	printf("\n%d:%d %s: 0x%04X (%d)", 
+	printf("\n%d:%d <%s>: 0x%04X (%d)", 
 		(int)tv.tv_sec, (int)tv.tv_usec, 
-		ttyname(sourcefd), len , len );
+		lookupName(sourcefd), len , len );
 
 	hexDump(buf, len);
 

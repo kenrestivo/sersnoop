@@ -1,6 +1,6 @@
 /* $Id$ 
-	selectloop.h
-	deal with selecting
+	commmon.c
+	structs used globally by serialsnoop
 
     Copyright (C) 2002  ken restivo <ken@restivo.org>
     
@@ -18,16 +18,34 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-#ifndef SELECTLOOP_H
-#define SELECTLOOP_H
 
+#include <stdio.h>
 #include "common.h"
 
-int
-twoWaySelect(struct fdstruct ** lfds);
+
+/* GLOBS */
+extern struct fdstruct * gfds[]; /* IMPORTANT! not ** but [] ! */
 
 
-#endif /* SELECTLOOP_H */
+/******************
+	LOOKUPNAME
+	from an fd, returns the name associated with it
+	or null if not found
+******************/
+char * 
+lookupName(int fd)
+{
+	struct fdstruct ** p = NULL;
+
+	for(p = gfds; *p != NULL; p++){
+		if((*p)->fd == fd){
+			return (*p)->name; 
+		}
+	}
+	return NULL; /* not found */
+
+}/* END LOOKUPNAME */
+
 
 /* EOF */
 

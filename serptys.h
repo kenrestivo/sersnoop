@@ -22,9 +22,10 @@
 #ifndef SERPTYS_H
 #define SERPTYS_H
 
+#include "common.h"
 
 /* NOTE: this malloc's *slaveName, you must free */
-int 
+struct fdstruct *
 getPty(int ptmx);
 
 #endif /* SERPTYS_H */

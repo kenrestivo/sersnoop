@@ -21,10 +21,12 @@
 #ifndef SOCK_H
 #define SOCK_H
 
-int	
+#include "common.h"
+
+struct fdstruct *
 openSock (char * path);
 
-int
+struct fdstruct *
 openServer(char * path);
 
 #endif /* SOCK_H */

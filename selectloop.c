@@ -26,6 +26,7 @@
 #include <errno.h>
 #include <sys/select.h>
 #include <kenmacros.h>
+#include "common.h"
 
 extern int shutdownFlag;
 
@@ -131,12 +132,14 @@ selectLooper(int * virtFd, int numFds)
 	starts the loop spinning, with ttwo fd's
 ******************/
 int
-twoWaySelect(int fd1, int fd2)
+twoWaySelect(struct fdstruct ** lfds)
 {
 	int virtFd[2];
 
-	virtFd[0] = fd1;
-	virtFd[1] = fd2;
+	/* XXX cheap and dirty. 
+		i don't bother cycling through them all, just assume there's two */
+	virtFd[0] = lfds[0]->fd;
+	virtFd[1] = lfds[1]->fd;
 
 	return selectLooper(virtFd, 2);
 	
