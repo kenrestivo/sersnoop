@@ -105,7 +105,7 @@ opentty(char *path )
 	int baudcode = 0 ;
 
 	/* split out the options */
-	RETCALL( (humanbaud = splitColon(ttyname, &ttyname)) );
+	RETCALL( (humanbaud = splitColon(path, &ttyname)) );
 
 	/* decode baud */
 	RETCALL(baudcode = decodeBaud(humanbaud));
