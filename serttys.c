@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <sys/ioctl.h>
 #include <kenmacros.h>
+#include "util.h"
 
 /* DEFS */
 
@@ -16,7 +17,7 @@
 	DECODEBAUD
 	takes in a reg'lar number and returns the weirdo Bxxx code needed for changespeed
 ******************/
-int
+static int
 decodeBaud(int baud)
 {
 	struct ipair { 
@@ -50,13 +51,13 @@ decodeBaud(int baud)
 
 	for(i=0; i< STAT_ARRAY_SIZE(baudy); i++){
 		if(baudy[i].real == baud){
-			DPRINTF(1, "found human baud %d is weird code 0x%X\n", 
+			DPRINTF(1, "decodeBaud(): found human baud %d is weird code 0x%X\n", 
 				baud, baudy[i].weird);
 			return(baudy[i].weird);
 		}
 	}
 
-	DPRINTF(1, "human baud %d not found\n", baud);
+	DPRINTF(1, "decodeBaud(): human baud %d not found\n", baud);
 	return(-1);
 
 }/* END DECODEBAUD */
@@ -66,7 +67,7 @@ decodeBaud(int baud)
 	CHANGESPEED
 	NOTE! baud is not a speed int, it's one of the termios.h Bxxx constants!
 ******************/
-int 
+static int 
 changespeed( int fd, int baud)
 {
 	/* termios interface */
@@ -96,18 +97,30 @@ changespeed( int fd, int baud)
 	opens up a tty in raw mode
 ******************/
 int
-opentty(char *path, int baudcode)
+opentty(char *path )
 {
 	int fd;
+	char * ttyname = NULL;
+	int humanbaud = 0 ;
+	int baudcode = 0 ;
 
-	DPRINTF(1, "opening %s with baudcode 0x%X\n", path, baudcode);
+	/* split out the options */
+	RETCALL( (humanbaud = splitColon(ttyname, &ttyname)) );
+
+	/* decode baud */
+	RETCALL(baudcode = decodeBaud(humanbaud));
+	
+
+	DPRINTF(1, "opentty(): opening %s with baudcode 0x%X\n", ttyname, baudcode);
 
 	/* XXX weird... i'm using select/poll, should i use NDELAY?? */
-	RETCALL(fd = open(path, O_RDWR | O_NDELAY ) ) ;
+	RETCALL(fd = open(ttyname, O_RDWR | O_NDELAY ) ) ;
 
 	RETCALL(changespeed(fd, baudcode) );
 
-	DPRINTF(1, "opened %s as fd %d\n", path, fd);
+	DPRINTF(1, "opentty(): opened %s as fd %d\n", ttyname, fd);
+
+	free(ttyname);
 
 	return(fd);
 }/* END OPENTTY  */

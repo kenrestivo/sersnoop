@@ -23,7 +23,8 @@ KENINCL=/mnt/kens/ki/is/c/kenincl
 #build stuff
 TARGETS= sersnoop
 CFLAGS:= -g -Wall  -O3  -I/lib/modules/`uname -r`/build/include -I$(KENINCL)
-sersnoop_OBJS:= main.o pollcat.o serttys.o serptys.o sig.o selectloop.o display.o
+sersnoop_OBJS:= main.o pollcat.o serttys.o serptys.o sig.o selectloop.o \
+				display.o sock.o util.o
 
 #
 
@@ -37,13 +38,13 @@ sersnoop: $(sersnoop_OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o  $@ $(sersnoop_OBJS)
 
 test: sersnoop
-	./sersnoop 
+	./sersnoop -a/dev/ttyS0:9600 -b pty
 
 safetest: sersnoop
-	./sersnoop  -D/dev/ttyS0 -b 9600
+	./sersnoop  -a/dev/ttyS0:9600 -b pty
 
 selecttest: sersnoop
-	./sersnoop -s
+	./sersnoop -s -a/dev/ttyS0:9600 -b pty
 
 debug: sersnoop
 	@gdb ./sersnoop

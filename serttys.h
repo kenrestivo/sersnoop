@@ -6,14 +6,9 @@
 #ifndef SERTTYS_H
 #define SERTTYS_H
 
-int
-decodeBaud(int baud);
-
-int 
-changespeed( int fd, int baud);
 
 int
-opentty(char *path, int baud);
+opentty(char *path );
 
 
 #endif /* SERTTYS_H */

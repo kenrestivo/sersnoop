@@ -28,19 +28,19 @@ processInput(int * virtFd, int numFds, fd_set * foundFds)
 
 	for (i = 0; i < numFds; i++){
 		if(FD_ISSET(virtFd[i], foundFds)){
-			/* TODO: this is already buffered by select, need stdio? */
+		/* 	TODO: copy/paste from pollcat.c!! */
 			while ( (rcount = read(virtFd[i], buf, sizeof(buf)) ) >0 ){
 				/* buncha UGLY debug stuff */
 				#ifdef __SVR4
-				DPRINTF(1, "got %d bytes from fd %d: ",
+				DPRINTF(1, "processInput(): got %d bytes from fd %d: ",
 					rcount, virtFd[i]  );
 				#else
-				DPRINTF(1, "got %d bytes from fd %d, %s: ",
+				DPRINTF(1, "processInput(): got %d bytes from fd %d, %s: ",
 					rcount, virtFd[i], ttyname(virtFd[i]) );
 				#endif /* __SVR4 */
 
 				if(write(1, buf, rcount) < 0){
-					fprintf(stderr, "write problem\n");
+					fprintf(stderr, "processInput(): write problem\n");
 					return -2;
 				}
 			} /* end while */

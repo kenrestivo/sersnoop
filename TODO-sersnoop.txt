@@ -1,10 +1,12 @@
 TODO- serial snooper
 
 ok, go for it: add in the network code! now i have something like net2tty
-	figure out the command-line options
-	roll in the code (should be easy)
+	parse out the device line
+	regression testing
 	test with standard terminal shit
 		btw read telnet rfc's
+
+create a DIEUSAGE macro
 
 make the debug code optional? so i can run it as a daemon?
 	essentially, make all the display.c shit DPRINTF level 1
@@ -88,4 +90,10 @@ start the writing/reading.
 add in the decoding/printing
 	lift from xxd? ;-) at least read it
 		DONE. it's not perfect, or even nice, but it works
-
+figure out the command-line options
+		two devices: a and b
+			each device could be one of net/pty/tty
+		ok, -a and -b. spec it as /dev/xxx:baud or host.name.domain:port
+			grab code from chotplay DONE
+	roll in the code (should be easy) DONE
+	

@@ -26,10 +26,11 @@
 ******************************/
 #ifdef TIOCGPTN
 static int 
-linuxGetPty(char ** slaveName)
+linuxGetPty(void)
 {
     int masterFd = 0 ;
 	int slaveNum = -1;
+	char * slaveName = NULL;
 		
 	/* first open a master pty (/dev/ptmx) */
 	RETCALL( masterFd = open("/dev/ptmx", O_RDWR)) ;
@@ -38,11 +39,13 @@ linuxGetPty(char ** slaveName)
 	RETCALL( ioctl(masterFd, TIOCGPTN, &slaveNum) );
 
 
-	NULLCALL(*slaveName = (char *)malloc(SLAVELEN));
-    snprintf(*slaveName, SLAVELEN, "/dev/pts/%d", slaveNum);
+	NULLCALL(slaveName = (char *)malloc(SLAVELEN));
+    snprintf(slaveName, SLAVELEN, "/dev/pts/%d", slaveNum);
 	
-    DPRINTF(1, "your pty is %s and the master is on fd %d\n",
-        *slaveName, masterFd);
+    DPRINTF(1, "linuxGetPty(): your pty is %s and the master is on fd %d\n",
+        slaveName, masterFd);
+
+	free(slaveName);
 
     return  masterFd;
 } /* END LINUXGETPTY */
@@ -56,7 +59,7 @@ linuxGetPty(char ** slaveName)
     note: this is portable, works with any bsd, linux, or solaris system
 ***************************/
 static int 
-bsdGetPty(char ** slaveName)
+bsdGetPty(void)
 {
     /* TODO: is there any way to avoid overfloating the input string? 
         if it isn't 32 chars long? */
@@ -65,6 +68,7 @@ bsdGetPty(char ** slaveName)
     char * ltrp;
     char * nump = NULL;
     char masterName[32] = "";
+    char * slaveName = NULL;
     int masterFd = 0 ;
 
     /* get master */
@@ -74,7 +78,7 @@ bsdGetPty(char ** slaveName)
             if ( (masterFd = open(masterName, O_RDWR) ) >= 0){
                 goto out; /* i hate gotos */
             }
-            DPRINTF(1, "bsdGetTerm: open %d %s: %s\n",
+            DPRINTF(1, "bsdGetTerm(): open %d %s: %s\n",
                 masterFd, masterName, strerror(errno));
         }
     }
@@ -91,11 +95,13 @@ bsdGetPty(char ** slaveName)
 	}
 
     /* all is well, return the tty name  and the master fd*/
-	NULLCALL(*slaveName = (char *)malloc(SLAVELEN));
-    snprintf(*slaveName, SLAVELEN, "/dev/tty%c%c", *ltrp, *nump);
+	NULLCALL(slaveName = (char *)malloc(SLAVELEN));
+    snprintf(slaveName, SLAVELEN, "/dev/tty%c%c", *ltrp, *nump);
 
-    DPRINTF(1, "your pty is %s and the master is %s open on fd %d\n",
-        *slaveName, ttyname(masterFd), masterFd);
+    DPRINTF(1, "bsdGetPty(): your pty is %s and the master is %s open on fd %d\n",
+        slaveName, ttyname(masterFd), masterFd);
+
+	free(slaveName);
 
     return masterFd;
 
@@ -110,16 +116,19 @@ bsdGetPty(char ** slaveName)
 	NOTE: all of these functions malloc *slaveName, you must free
 ***************************/
 int 
-getPty(char ** slaveName )
+getPty(int ptmx)
 {
 
-/*
+	if(ptmx){
 #ifdef TIOCGPTN
-	return(linuxGetPty(slaveName));	
+		return(linuxGetPty());	
 #else
+	DPRINTF(1, "getPty(): can't use ptmx on this system\n");
+	return(-1);
 #endif 
-*/
-	return(bsdGetPty(slaveName));
+	} else {
+		return(bsdGetPty());
+	}
 
 } /* END GETPTY */
 

@@ -73,7 +73,7 @@ bcast(char * buf, int len, int fromfd, struct pollfd * pfds, int numfds)
 
 	while(i  < numfds){
 		if(pfds[i].fd != fromfd){
-			DPRINTF(2, "shouting out to my homey %s on fd %d\n",
+			DPRINTF(2, "bcast(): shouting out to my homey %s on fd %d\n",
 				ttyname(pfds[i].fd), pfds[i].fd);
 			/* XXX this might well fail if i don't have NDELAY. 
 					it might need to be in loop. */
@@ -113,7 +113,7 @@ processInput(struct pollfd * pfds, int numFds)
 			} else if (rcount < 0 ) {
 				perror("read error in poll:processInput\n");
 			} else {
-				DPRINTF(1, "wtf? read of 0?\n");
+				DPRINTF(1, "processInput(): wtf? read of 0?\n");
 			}
 		} /* end if */
 	} /* end for */
@@ -133,7 +133,7 @@ pollLoop(struct pollfd * pfds, int pfdCount)
 {
 	nfds_t foundCount; /* don't be scared, it's just a uint */
 
-	DPRINTF(1, "starting poll loop with total of %d fd's\n", pfdCount);
+	DPRINTF(1, "pollLoop(): starting poll loop with total of %d fd's\n", pfdCount);
 
 	while(shutdownFlag == 0){
 		SYSCALL(foundCount = poll(pfds, pfdCount, INFTIM));

@@ -9,7 +9,7 @@
 
 /* NOTE: this malloc's *slaveName, you must free */
 int 
-getPty(char ** slaveName );
+getPty(int ptmx);
 
 #endif /* SERPTYS_H */
 
