@@ -6,6 +6,7 @@ start the writing/reading.
 		do some isprint() shit.
 	make sure it works, and works well.
 
+should i be using O_NDELAY on tty when i'm using select/poll?? good idea?
 
 add in the decoding/printing
 	lift from xxd? ;-)

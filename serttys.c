@@ -96,16 +96,16 @@ changespeed( int fd, int baud)
 	opens up a tty in raw mode
 ******************/
 int
-opentty(char *path, int baud)
+opentty(char *path, int baudcode)
 {
 	int fd;
 
-	DPRINTF(1, "opening %s at %d baud\n", path, baud);
+	DPRINTF(1, "opening %s with baudcode 0x%X\n", path, baudcode);
 
+	/* XXX weird... i'm using select/poll, should i use NDELAY?? */
 	RETCALL(fd = open(path, O_RDWR | O_NDELAY ) ) ;
-	if(baud > 0){
-		RETCALL(changespeed(fd, baud) );
-	}
+
+	RETCALL(changespeed(fd, baudcode) );
 
 	DPRINTF(1, "opened %s as fd %d\n", path, fd);
 
