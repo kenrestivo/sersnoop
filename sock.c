@@ -28,6 +28,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/tcp.h>
+#include <arpa/inet.h>
 #include <kenmacros.h>
 #include "util.h"
 #include "sock.h"
@@ -87,7 +88,7 @@ openServer(char * path)
 
 	SYSCALL(getpeername(ad, &peerSa, &peerLen));
 	DPRINTF(1, "got connection from %s on %d\n", 
-		inet_ntoa(peerSa.sin_addr.s_addr), 
+		inet_ntoa(peerSa.sin_addr), 
 		ntohs(peerSa.sin_port));
 
 	/* TODO: rip the gethostbyaddr() stuff from my old gethostfun program  */

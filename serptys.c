@@ -20,6 +20,7 @@
 */
 
 
+#include <stdio.h>
 #include <fcntl.h>
 #include <strings.h>
 #include <termios.h>
