@@ -53,7 +53,7 @@ processInput(int * virtFd, int numFds, fd_set * foundFds)
 					rcount, virtFd[i]  );
 				#else
 				DPRINTF(1, "processInput(): got %d bytes from fd %d, %s: ",
-					rcount, virtFd[i], ttyname(virtFd[i]) );
+					rcount, virtFd[i], lookupName(virtFd[i]) );
 				#endif /* __SVR4 */
 
 				if(write(1, buf, rcount) < 0){

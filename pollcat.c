@@ -94,9 +94,8 @@ bcast(char * buf, int len, int fromfd, struct pollfd * pfds, int numfds)
 
 	while(i  < numfds){
 		if(pfds[i].fd != fromfd){
-			/* TODO: replace this ttyname() with a lookup in the global gfds? */
 			DPRINTF(2, "bcast(): shouting out to my homey %s on fd %d\n",
-				ttyname(pfds[i].fd), pfds[i].fd);
+				lookupName(pfds[i].fd), pfds[i].fd);
 			/* XXX this might well fail if i don't have NDELAY. 
 					it might need to be in the loop, and that would suck. */
 			RETCALL(write(pfds[i].fd, buf, len));	
@@ -143,7 +142,8 @@ processInput(struct pollfd * pfds, int numFds)
 	} /* end for */
 
 	/* XXX this is fucked */
-	DPRINTF(1, "nobody had data??\n");
+	DPRINTF(1, "reading from %d (%s): nobody had data??\n", 
+		pfds[i].fd, lookupName(pfds[i].fd));
 	return(1);
 
 } /* END PROCESSINPUT */
@@ -174,7 +174,7 @@ pollLoop(struct pollfd * pfds, int pfdCount)
 		RETCALL(res = processInput(pfds, pfdCount));
 		if(res > 0){
 			DPRINTF(1, "pollLoop(): connection %s closed on %d\n", 
-					ttyname(res), res);
+					lookupName(res), res);
 			/* XXX shoudl be? removePfd(pfds, &pfdCount, res); */
 			return(-1); 
 		}

@@ -122,7 +122,7 @@ struct fdstruct *
 opentty(char *path )
 {
 	int fd;
-	char * ttyname = NULL;
+	char * mytty = NULL;
 	int humanbaud = 0 ;
 	int baudcode = 0 ;
 	struct fdstruct * lfd = NULL;
@@ -130,22 +130,22 @@ opentty(char *path )
 	NULLCALL(lfd = (struct fdstruct *)malloc(sizeof(struct fdstruct)));
 
 	/* split out the options */
-	NRETCALL( (humanbaud = splitColon(path, &ttyname)) );
+	NRETCALL( (humanbaud = splitColon(path, &mytty)) );
 
 	/* decode baud */
 	NRETCALL(baudcode = decodeBaud(humanbaud));
 	
 
-	DPRINTF(1, "opentty(): opening %s with baudcode 0x%X\n", ttyname, baudcode);
+	DPRINTF(1, "opentty(): opening %s with baudcode 0x%X\n", mytty, baudcode);
 
 	/* XXX weird... i'm using select/poll, should i use NDELAY?? */
-	NRETCALL(fd = open(ttyname, O_RDWR | O_NDELAY ) ) ;
+	NRETCALL(fd = open(mytty, O_RDWR | O_NDELAY ) ) ;
 
 	NRETCALL(changespeed(fd, baudcode) );
 
-	DPRINTF(1, "opentty(): opened %s as fd %d\n", ttyname, fd);
+	DPRINTF(1, "opentty(): opened %s as fd %d\n", mytty, fd);
 
-	free(ttyname);
+	free(mytty);
 
 	/* note, the caller of opentty() must free this later on */
 	lfd->name = strdup(path);
