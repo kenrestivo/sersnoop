@@ -58,40 +58,58 @@ stripUnreadables(char * dirty, char * clean, int len)
 
 
 /******************
+	PRINTLINE
+	prints a line of hex and ascii
+	linebuf is just THE LINE (not the whole buf)
+	len is the length of the line (so i can change it later)
+	mainpos is the position in the main buffer of the first byte of this line
+		does that make any sense?
+	returns the new mainpos, or -1 if error
+******************/
+int
+printLine(unsigned char * linebuf, int linelen, int mainpos)
+{
+	char posfmt[]= "\n    0x%0.4x: "; /* maximum 65535 before rolling over */
+	char bytefmt[] = "%02x%02x ";
+	char * cleanbuf = NULL;
+	int i = 0;
+
+	/* the header */
+	printf(posfmt, mainpos);
+
+	/* the bytes */
+	for(i = 0; i < linelen; i++){
+		/* XXX i++ is an evil hack. gcc says so. i know it. i'll fix it. */
+		printf(bytefmt, linebuf[i++], linebuf[i++]);
+		DPRINTF(2, "mainpos = %d, bytesline = %d\n", 
+					mainpos, i);
+		mainpos++; /* for debug, mostly */
+	}
+
+	/* the ascii */
+	NULLCALL(cleanbuf = (char *)malloc(linelen));
+	stripUnreadables(linebuf, cleanbuf, linelen);
+	printf("  %.*s", linelen, cleanbuf);
+
+	free(cleanbuf);
+
+	return (mainpos); /* note! this has been incremented in the loop */
+}/* END PRINTLINE */
+
+
+
+/******************
 	HEXDUMP
 	like the man says, dump the hex ;-)
 ******************/
 static void
 hexDump(unsigned char * buf, int len)
 {
-	char posfmt[]= "\n    0x%0.4x: "; /* maximum 65535 before rolling ouver */
-	char bytefmt[] = "%0.2x%0.2x ";
-	int bytesline = 0; /* position on the screen */
 	int pos = 0; /* position in the buffer */
-	char * asciistart = NULL; /* a pointer because index 0 is problematic */
-	char cleanbuf[MAXBYTESLINE];
 	
 	while(pos < len){
-		if(bytesline == 0 || bytesline >= MAXBYTESLINE){
-			/* print the header */
-			printf(posfmt, pos);
-			/* fmt has \n in it, so we are resetting the column = here. */
-			bytesline = 0;
-			asciistart = &buf[pos];
-		}
-	
-		/* print 2 bytes */
-		printf(bytefmt, buf[pos++], buf[pos++]);
-		bytesline += 2;
-		DPRINTF(2, "pos = %d, bytesline = %d\n", 
-					pos, bytesline);
-
-		/* XXX i fucking hate this hack. i hate state machines. but it works. */
-		if(bytesline >= MAXBYTESLINE && asciistart != NULL){
-			stripUnreadables(asciistart, cleanbuf, MAXBYTESLINE);
-			printf("  %.*s", MAXBYTESLINE-1, cleanbuf);
-			asciistart = NULL;
-		}
+		/* XXX ok, i think i will have remainder issues here */
+		pos = printLine(&buf[pos], MAXBYTESLINE, pos);
 	} /* end while */
 
 	putchar('\n'); /* XXX redundant? */
@@ -114,8 +132,11 @@ dumpTest(int which)
 		testbuf0[i] = i;
 	}
 
-	DPRINTF(1, "here is a test buffer displayed:\n");
+	DPRINTF(1, "here is a test buffer 0 displayed:\n");
 	hexDump(testbuf0, sizeof(testbuf0));
+
+	DPRINTF(1, "here is the first 2 bytes of test buffer 0:\n");
+	hexDump(testbuf0, 2);
 
 }/* END DUMPTEST */
 
@@ -141,7 +162,7 @@ display(int sourcefd, char * buf, int len)
 		total = 0;
 	}
 
-	printf("%d:%d %s: 0x%0.4X (%d)\n", 
+	printf("%d:%d %s: 0x%04X (%d)\n", 
 		(int)tv.tv_sec, (int)tv.tv_usec, 
 		ttyname(sourcefd), len , len );
 
