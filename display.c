@@ -44,15 +44,25 @@ stripUnreadables(char * dirty, char * clean, int len)
 	shows the buffer in an xxd-like format
 ******************/
 int
-display(char * source, char * buf, int len)
+display(int sourcefd, char * buf, int len)
 {
 	char * clean = NULL;
+	static int lastsource = -1;
+	static int total = 0;
 
 	NULLCALL(clean =(char *)malloc(len));
 
 	stripUnreadables(buf, clean, len);
 
-	printf("%s: (%d) <%.*s>\n", source, len,  len, clean);
+	total += len;
+
+	if(lastsource != sourcefd){
+		printf("\ttotal %d\n--------\n", total);
+		lastsource = sourcefd;
+		total = 0;
+	}
+
+	printf("%s: (%d) <%.*s>\n", ttyname(sourcefd), len,  len, clean);
 
 	return 0;
 

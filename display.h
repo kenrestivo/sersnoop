@@ -8,7 +8,7 @@
 
 
 int
-display(char * source, char * buf, int len);
+display(int sourcefd, char * buf, int len);
 
 
 #endif /* DISPLAY_H */

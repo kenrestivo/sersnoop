@@ -1,20 +1,15 @@
 TODO- serial snooper
 
-start the writing/reading. 
-	make sure it works, and works well.
-		hmm. some constipation. my while() read loop?
-
 add in the decoding/printing
-	lift from xxd? ;-)
+	lift from xxd? ;-) at least read it
+	some static var, who was talking last, so if it changes, i print that?
+		cool. but... the totals don't look quite yet
 
 deal with the writing now.
 	shall i select for write? hmm... could get tricky...
 
 ----------------
 STUCK
-
-hmm. shall i read until done, or just grab one chunk?
-	STUCK: look around at other code
 
 should i be using O_NDELAY on tty when i'm using select/poll?? good idea?
 	STUCK: read up on this
@@ -68,3 +63,12 @@ baud setting looks alllll goooodd
 	get %*s going or snprintf or something
 		SOLUTION: done
 	do some isprint() shit. DONE
+		hmm. some constipation. my while() read loop?
+			SOLUTION: no while
+hmm. shall i read until done, or just grab one chunk?
+	look around at other code
+		SOLUTION: nope. no while, just an if
+
+start the writing/reading. 
+	make sure it works, and works well.
+		well, it does, dammit!

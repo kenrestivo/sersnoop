@@ -107,12 +107,7 @@ processInput(struct pollfd * pfds, int numFds)
 				/* shout it to all the others */
 				bcast(buf, rcount, pfds[i].fd, pfds, numFds);
 
-				/* hey, not that i'll ever use slowlaris again, but wtf */
-				#ifdef __SVR4
-				RETCALL(display( "unknown term XXX fix me", buf, rcount) );
-				#else
-				RETCALL(display( ttyname(pfds[i].fd), buf, rcount) );
-				#endif /* __SVR4 */
+				RETCALL(display( pfds[i].fd, buf, rcount) );
 				return 0;
 
 			} else if (rcount < 0 ) {
