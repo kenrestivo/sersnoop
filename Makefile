@@ -101,6 +101,9 @@ dumptest: sersnoop
 selecttest: sersnoop
 	./sersnoop -s -a/dev/ttyS1:38400 -b pty
 
+flow:
+	cflow -I$(KENINCL)  *.[ch] > sersnoop.cflow 2> cflow.errs
+
 #debug and utility targets
 
 debug: sersnoop
