@@ -1,5 +1,10 @@
 TODO- serial snooper
 
+debianize it. don't critizize it.
+	dh-make
+		figure out how to make it expect a "native" package
+	have yet another look at giFT
+
 add ssl support. yeah, right.
 	man ssl! it officially documents the api
 		read the online version with hyperlinks.
