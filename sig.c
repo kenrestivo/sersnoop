@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <kenmacros.h>
 
-int shutdown;
+int shutdownFlag;
 
 /************************
     TESTHANDLER
@@ -29,11 +29,11 @@ testHandler(int sig)
                 "testhandler: this is an SNMP message-- "
                 "Somebody Nuked My Program.\n");
             fprintf(stderr, "testhandler: now i am exiting\n");
-            shutdown = 1;
+            shutdownFlag = 1;
             break;
         case SIGHUP:
             fprintf(stderr, "testhandler: hup!\n");
-            shutdown = 1;
+            shutdownFlag = 1;
             break;
         default:
             break;

@@ -1,12 +1,8 @@
 TODO- serial snooper
 
-ack. the linux ptmx shit is broken.
-	try the oldskool berkeley shit instead?
-		it fixes the crash at basic read
-		ack. that's borken too
-	re-read unix book on terminals
+ack. the poll is broken. but raw reads work just fine.
+	try select instead
 	look at openssh?
-	try it on netbsd?
 
 start the writing/reading. 
 	make sure it works, and works well.
@@ -27,6 +23,11 @@ BELOW THE LINE
 ----------------
 NOWHERE
 
+	try it on netbsd? NOWHERE: same problem
+	try the oldskool berkeley shit instead?
+		it fixes the crash at basic read
+		ack. that's borken too
+	re-read unix book on terminals NOTHING there on ptmx?
 	try putting signal handlers in NOWHERE. still broken
 ----------------
 DONE

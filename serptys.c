@@ -29,6 +29,7 @@ static int
 linuxGetPty(char ** slaveName)
 {
     int masterFd = 0 ;
+	int slaveNum = -1;
 		
 	/* first open a master pty (/dev/ptmx) */
 	RETCALL( masterFd = open("/dev/ptmx", O_RDWR)) ;

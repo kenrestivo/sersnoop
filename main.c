@@ -27,11 +27,11 @@ extern int optind, opterr, optopt;
 ************************/
 void
 usage(){
-	fprintf(stderr, "usage: sersnoop
-	-D terminal device (default /dev/ttyS1)
-	-b terminal baudrate (default 38400)
-	-d debug level
-	");
+	fprintf(stderr, "usage: sersnoop \n"
+	"\t-D terminal device (default /dev/ttyS1)\n"
+	"\t-b terminal baudrate (default 38400)\n"
+	"\t-d debug level\n"
+	);
 	exit(1);
 
 } /* END USAGE */
