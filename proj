@@ -27,6 +27,21 @@ FILES="
 		proj \
 "
 
+OPTIONALS="
+		/mnt/www/restivo/projects/sersnoop/index.html
+"
+
+
+#code starts here
+
+for i in ${OPTIONALS}; do
+	echo "checking for "${i}".."
+	if [ -e "${i}" ] ; then
+		FILES="${FILES} ${i}"
+		echo "editing "${i}".."
+	fi
+done
+
 DAY=nite
 
 if [ "$1" ]; then
@@ -44,6 +59,10 @@ case "$DAY" in
 		kvi ${FILES}
 	;;
 esac
+
+echo
+echo
+echo
 	
 #EOF
 

@@ -1,8 +1,5 @@
 TODO- serial snooper
 
-hmm. some way to glean the socket host/port from an fd/sd?
-	trash all ttyname() and replace with lookupName()
-
 
 make the network socket code portable
 
@@ -218,3 +215,7 @@ the decode display is butt-ugly.
 	now, update the display function to USE this fabulous information...
 		need a common.c, dammit, with a lookup function
 		SOLUTION: i stuck it in common.c. AND i quarantined the use of the global there too
+hmm. some way to glean the socket host/port from an fd/sd?
+	trash all ttyname() and replace with lookupName()
+		DONE
+

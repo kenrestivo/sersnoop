@@ -21,7 +21,7 @@
 #names
 PACKAGE=sersnoop
 SRCDIR=sersnoop
-REL=0.2b
+REL=0.2c
 
 #dirs
 DISTDIR=/mnt/www/restivo/projects/$(PACKAGE)/src
@@ -32,7 +32,7 @@ TARGETS= sersnoop
 CFLAGS:= -g -Wall  -O3  -I/lib/modules/`uname -r`/build/include -I$(KENINCL) -DREL=\"$(REL)\"
 sersnoop_OBJS:= main.o pollcat.o serttys.o serptys.o sig.o selectloop.o \
 				display.o sock.o util.o common.o
-sersnoop_HEADERS:= common.h
+sersnoop_HEADERS:= common.h Makefile
 
 #
 
