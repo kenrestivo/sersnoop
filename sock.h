@@ -21,7 +21,8 @@
 #ifndef SOCK_H
 #define SOCK_H
 
-int	openSock (char * path);
+int	
+openSock (char * path);
 
 int
 openServer(char * path);

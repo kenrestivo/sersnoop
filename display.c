@@ -1,7 +1,6 @@
 /* $Id$ 
 	display.c
 	handles displaying what was recieved
-	would like to make this an xxd-like format
 
     Copyright (C) 2002  ken restivo <ken@restivo.org>
     
@@ -34,8 +33,12 @@
 
 /******************
 	STRIPUNREADABLES
+	replaces unreadable chars with '.'
+	dirty is the raw buffer, 
+	clean is an empty buffer into which the clean data will be put
+	len is the lentgh of the buffer (BOTH must be the same len!)
 ******************/
-static int
+static void
 stripUnreadables(char * dirty, char * clean, int len)
 {
 	char * d = dirty;
@@ -51,8 +54,6 @@ stripUnreadables(char * dirty, char * clean, int len)
 		d++;
 		c++;
 	}
-
-	return 0;
 
 }/* END STRIPUNREADABLES */
 
@@ -71,7 +72,7 @@ int
 printLine(unsigned char * linebuf, int linelen, int mainpos)
 {
 	char posfmt[]= "\n    0x%0.4x: "; /* maximum 65535 before rolling over */
-	char bytefmt[] = "%02x ";
+	char bytefmt[] = "%02x";
 	char * cleanbuf = NULL;
 	int i = 0;
 
@@ -81,6 +82,12 @@ printLine(unsigned char * linebuf, int linelen, int mainpos)
 	/* the bytes */
 	for(i = 0; i < linelen; i++){
 		printf(bytefmt, linebuf[i]);
+		if(i % 2 ){
+			putchar(' ');
+		}
+		if(i % 8  == 7){ /* goofy, but it solves the position 0 problem */
+			putchar(' ');
+		}
 		DPRINTF(2, "mainpos = %d, bytesline = %d\n", 
 					mainpos, i);
 		mainpos++; /* for debug, mostly */
@@ -90,7 +97,7 @@ printLine(unsigned char * linebuf, int linelen, int mainpos)
 	/* XXX oops. with short packets, my column justtification is fucked */
 	NULLCALL(cleanbuf = (char *)malloc(linelen));
 	stripUnreadables(linebuf, cleanbuf, linelen);
-	printf(" <%.*s>", linelen, cleanbuf);
+	printf(" | %.*s", linelen, cleanbuf);
 
 	free(cleanbuf);
 
@@ -110,7 +117,7 @@ hexDump(unsigned char * buf, int len)
 	int linelen = MAXBYTESLINE;
 	
 	while(pos < len){
-		/* XXX i have remainder issues here */
+		/* deal with remainder issues */
 		linelen = len-pos < linelen ? len-pos : linelen;
 		pos = printLine(&buf[pos], linelen, pos);
 	} /* end while */
@@ -138,8 +145,8 @@ dumpTest(int which)
 	DPRINTF(1, "here is a test buffer 0 displayed:\n");
 	hexDump(testbuf0, sizeof(testbuf0));
 
-	DPRINTF(1, "here is the first 2 bytes of test buffer 0:\n");
-	hexDump(testbuf0, 2);
+	DPRINTF(1, "here is the first 3 bytes of test buffer 0:\n");
+	hexDump(testbuf0, 3);
 
 }/* END DUMPTEST */
 

@@ -21,7 +21,7 @@
 #names
 PACKAGE=sersnoop
 SRCDIR=sersnoop
-REL=0.2a
+REL=0.2b
 
 #dirs
 DISTDIR=/mnt/www/restivo/projects/$(PACKAGE)/src

@@ -32,12 +32,13 @@ make the debug code optional? so i can run it as a daemon?
 		fork(), etc.
 	try it with sendfile? is it any faster/more responsive? if i don't need debug.
 
+fancy formatting. 
+	same in ascii. yes.
+		non-trivial. i'd have to do it in stripUnreadables, AND make sure there's extra bytes to cover it, meaning malloc, it's gettin ugly
+
+
 ----------------
 BELOW THE LINE
-
-fancy formatting. 
-	2bytes, then space. 2 spaces at 4 byte boundaries. 
-	same in ascii. yes.
 
 possibly blow off all this command-line crap and use a conf file instead
 	use the gtk file-parsing library . look up the name of it in my c/notes/gtk
@@ -54,10 +55,11 @@ cfmakeraw() instead of all that manual flag-setting
 	try termtest on netbsd
 		STUCK: need to fix some of the includes/ifdefs/defines
 
-make it dynamic?
+make the display dynamic?
 	non-trivial
 	does the column width show up in any envs?
 		nope, but you can ioctl or cfget for it!!!
+
 
 expand to make it handle more than two
 	change the command line parsing instead of -a -b, just put them as optind's
@@ -196,3 +198,5 @@ clean up the evil i++ hack in hexDump()
 				DONE. a simple line - pos issue
 the decode display is butt-ugly. 
 	SOLUTION: nice now.
+	2bytes, then space. 2 spaces at 4 byte boundaries. 
+		DONE
