@@ -1,0 +1,44 @@
+<html>
+<head><title>sersnoop</title></head>
+<body>
+<h1>snoops the serial ports</h1>
+
+<table width="100%" border=0>
+</table>
+<tr><td>
+
+
+<h3>what?</h3>
+a simple command-line tool for linux that echoes bytes to and from any one of a serial port, a pty, or a network socket, and prints all traffic to stdout, in hex and ascii (i.e. xxd)
+
+<h3>why?</h3>
+i needed a tool to redirect programs that only understand serial ports (or pty's) to communicate over the network instead (to a terminal server)
+
+<h3>status</h3>
+<li>alpha. it works swimmingly well on linux.
+
+<h3>to install: </h3>
+<li>you'll need linux. the code uses non-portable linux-isms in the network socket code. this is easy to fix, but i haven't yet. for now, it's a penguin-only thing.
+<li>get the <a href="src/sersnoop-current.tar.gz">source</a> and untar it.
+<li>get my silly <a href="src/kenmacros.h">utility header file</a> and put it either in the source tree or somewhere else in your include path
+<li>type "make". hopefully it will build for you ;-)
+<li>"./sersnoop -h" will get you the help. you can specify two fd's to listen to: -a and -b. either or both of these can be a network socket, a physical tty, or a virtual pty.
+
+<h3>bugs</h3>
+<li>it only works on linux
+<li>the poll loop (and the program) exits when one fd goes away. i'd like it not to do that.
+<li>display code doesn't yet show the host/port of the socket(s) 
+
+<h3>to do</h3>
+<li>daemon mode without all the byte-decode display output
+<li>server mode (bind/listen/accept)
+<li>the decode display is butt-ugly. works fine for short packets but for long ones it's unreadable. i need to make it more xxd-like
+<li>make the network socket code portable
+<li>autoconf 
+
+<h3>licensing</h3>
+GPL.
+
+</body>
+</html>
+
