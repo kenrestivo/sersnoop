@@ -24,7 +24,8 @@ SRCDIR=sersnoop
 REL=0.4
 
 #dirs
-DISTDIR=/mnt/www/restivo/projects/$(PACKAGE)/src
+WEBDIR=/mnt/www/restivo/projects/$(PACKAGE)
+DISTDIR=$(WEBDIR)/src
 KENINCL=/mnt/kens/ki/is/c/kenincl
 DESTDIR=/usr/local
 
@@ -74,11 +75,14 @@ all: $(TARGETS)
 clean::
 	rm -f $(TARGETS) $(sersnoop_OBJS) $(ssl_OBJS) core
 
-sersnoop: $(sersnoop_OBJS) $(ssl_OBJS) $(sersnoop_HEADERS)
+sersnoop: $(sersnoop_OBJS) $(ssl_OBJS) $(sersnoop_HEADERS) README
 	$(CC) $(CFLAGS) $(LDFLAGS) $(SSLLDFLAGS) -o  $@ $(sersnoop_OBJS) $(ssl_OBJS)
 
 install: $(TARGETS)
 	install -c -m 755 sersnoop $(DESTDIR)/bin
+
+README: readme.html
+	lynx -dump readme.html > README
 
 #test targets
 
@@ -121,7 +125,7 @@ dist: sersnoop
 			$(SRCDIR)/*.[ch] \
 			$(SRCDIR)/Makefile \
 			$(SRCDIR)/TO*  \
-			$(SRCDIR)/README  \
+			$(SRCDIR)/readme.html  \
 	; gzip -f9  $(PACKAGE)-$(REL).tar
 
 distinst: dist
@@ -132,8 +136,9 @@ distinst: dist
 			rm -f $(PACKAGE)-current.tar.gz  ; \
 			ln -s $(PACKAGE)-$(REL).tar.gz $(PACKAGE)-current.tar.gz; \
 			rm -f $(PACKAGE)_current_i386.deb  ; \
-			ln -s $(PACKAGE)_$(REL)_i386.deb $(PACKAGE)_current.deb)
+			ln -s $(PACKAGE)_$(REL)_i386.deb $(PACKAGE)_current_i386.deb)
 	cp $(KENINCL)/kenmacros.h $(DISTDIR)/
+	cp readme.html  $(WEBDIR)/index.html
 
 #EOF
 

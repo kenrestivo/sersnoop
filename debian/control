@@ -2,7 +2,7 @@ Source: sersnoop
 Section: devel
 Priority: optional
 Maintainer: ken restivo <ken@restivo.org>
-Build-Depends: debhelper (>> 3.0.0), docbook-utils
+Build-Depends: debhelper (>> 3.0.0), docbook-utils, lynx
 Standards-Version: 3.5.2
 
 Package: sersnoop
