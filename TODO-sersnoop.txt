@@ -1,10 +1,8 @@
 TODO- serial snooper
 
-ack. the poll is broken. but raw reads work just fine.
-	try select instead
-	look at openssh?
-
 start the writing/reading. 
+	deal with the writing now.
+		shall i select for write? hmm... could get tricky...
 	make sure it works, and works well.
 
 add in the decoding/printing
@@ -19,6 +17,8 @@ BELOW THE LINE
 
 	try termtest on netbsd
 
+ack. the poll is broken. but raw reads work just fine.
+	look at openssh?
 
 ----------------
 NOWHERE
@@ -44,3 +44,5 @@ set up and open pty
 write a simple poll/select loop to read from both/either
 	there's one in sockclient/server isn't there? DONE
 
+	try select instead
+		SOLUTION! it works!

@@ -48,6 +48,8 @@ opentty(char *path, int baud)
 {
 	int fd;
 
+	DPRINTF(1, "opening %s at %d baud\n", path, baud);
+
 	RETCALL(fd = open(path, O_RDWR | O_NDELAY ) ) ;
 	if(baud > 0){
 		RETCALL(changespeed(fd, baud) );

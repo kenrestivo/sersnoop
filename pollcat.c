@@ -57,6 +57,7 @@ static void removePfd(struct pollfd *pfds, int * pfdCount, int fd)
 /******************
 	TWOWAYPOLL
 	point to point data
+	XXX: note this function is plain-ol' broken. DFW: don't fucking work.
 ******************/
 int
 twoWayPoll(int fd1, int fd2)

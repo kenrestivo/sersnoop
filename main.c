@@ -15,6 +15,7 @@
 #include "serttys.h"
 #include "serptys.h"
 #include "sig.h"
+#include "selectloop.h"
 
 /* GLOBS */
 int debug = 1;
@@ -62,11 +63,15 @@ main(int argc, char ** argv)
 	int rv = 0;
 	int c;
 
+	/* defaults */
+	ttyPath = strdup("/dev/ttyS1");
 
 	/* opts and such */
 	while( (c= getopt(argc, argv, "d:D:b:")) != -1) {
 		switch(c){
 			case 'D':
+				free(ttyPath);
+				ttyPath= NULL;
 				ttyPath = optarg;
 				break;
 			case 'd':
@@ -95,7 +100,7 @@ main(int argc, char ** argv)
 	ttyfd = opentty(ttyPath, B38400);
 
 	/* and now the loop de loop */
-	rv = twoWayPoll(ptfd, ttyfd); 
+	rv = twoWaySelect(ptfd, ttyfd); 
 	
 	/* eventually move the cleanups out, to be signal-clean */
 	free(slaveName);
