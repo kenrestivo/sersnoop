@@ -8,17 +8,18 @@ start the writing/reading.
 add in the decoding/printing
 	lift from xxd? ;-)
 
-
 ----------------
 STUCK
 
 ----------------
 BELOW THE LINE
 
-	try termtest on netbsd
+	select/poll doesn't work with ptmx's on linux. wtf?
+		STUCK: find docs on devpts/ptmx interface on linux, and how it works
+				or look in openssh source, for examples
 
-ack. the poll is broken. but raw reads work just fine.
-	look at openssh?
+	try termtest on netbsd
+		STUCK: need to fix some of the includes/ifdefs/defines
 
 ----------------
 NOWHERE
@@ -46,3 +47,10 @@ write a simple poll/select loop to read from both/either
 
 	try select instead
 		SOLUTION! it works!
+try poll...again... with & not ==
+	SOLUTION: that was it! i just copied the select code, changed to poll, all's good
+
+ack. the poll is broken. but raw reads work just fine.
+	look at openssh?
+		SOLUTION: just looked in orielly book. simple change
+

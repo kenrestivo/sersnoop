@@ -66,6 +66,8 @@ selectLooper(int * virtFd, int numFds)
 	int maxListenFds = 0;
 	int numActive = 0;
 	int i = 0;
+
+	DPRINTF(1, "starting select loop with %d fd's\n", numFds);
 	
 	/* clean out listenfds and set up timer */
 	FD_ZERO(&listenFds);

@@ -32,6 +32,7 @@ usage(){
 	"\t-D terminal device (default /dev/ttyS1)\n"
 	"\t-b terminal baudrate (default 38400)\n"
 	"\t-d debug level\n"
+	"\t-s try it with select not poll (for debugging)\n"
 	);
 	exit(1);
 
@@ -61,13 +62,14 @@ main(int argc, char ** argv)
 	int ttyfd = -1;	
 	int baud = 38400;
 	int rv = 0;
+	int sel = 0;
 	int c;
 
 	/* defaults */
 	ttyPath = strdup("/dev/ttyS1");
 
 	/* opts and such */
-	while( (c= getopt(argc, argv, "d:D:b:")) != -1) {
+	while( (c= getopt(argc, argv, "d:D:b:s")) != -1) {
 		switch(c){
 			case 'D':
 				free(ttyPath);
@@ -76,6 +78,9 @@ main(int argc, char ** argv)
 				break;
 			case 'd':
 				debug = atoi(optarg);
+				break;
+			case 's':
+				sel= 1;
 				break;
 			case 'b':
 				if((baud = decodeBaud(atoi(optarg)) <1)){
@@ -100,7 +105,7 @@ main(int argc, char ** argv)
 	ttyfd = opentty(ttyPath, B38400);
 
 	/* and now the loop de loop */
-	rv = twoWaySelect(ptfd, ttyfd); 
+	rv = sel ? twoWaySelect(ptfd, ttyfd) : twoWayPoll(ptfd, ttyfd); 
 	
 	/* eventually move the cleanups out, to be signal-clean */
 	free(slaveName);

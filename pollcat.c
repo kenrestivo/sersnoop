@@ -3,14 +3,22 @@
 	handles all the polling shit
 */
 
+
 #include <string.h>
 #include <errno.h>
+#include <assert.h>
 #include <sys/poll.h>
 #include <kenmacros.h>
 
 /* DEFS */
 #define POLLTIMEOUT 5
 #define READBUF 1024
+
+/* hack around weirdness in ugh */
+#ifndef INFTIM
+#define INFTIM -1
+#endif /* INFTIM */
+
 
 /* GLOBS */
 extern int shutdownFlag;
@@ -53,21 +61,76 @@ static void removePfd(struct pollfd *pfds, int * pfdCount, int fd)
 } /* END REMOVEPFD */
 
 
+/************************
+	PROCESSINPUT
+	cycles through the fd's with stuff on 'em, and prints it
+	RETURNS:  negative number if error
+*************************/
+static int 
+processInput(struct pollfd * pfds, int numFds)
+{
+	char buf[READBUF];
+	int rcount = 0;
+	int i = 0;
+
+	for (i = 0; i < numFds; i++){
+		if(pfds[i].revents & POLLIN ){
+			/* TODO: this is already buffered by select, need stdio? */
+			while ( (rcount = read(pfds[i].fd, buf, sizeof(buf)) ) >0 ){
+				/* buncha UGLY debug stuff */
+				#ifdef __SVR4
+				DPRINTF(1, "got %d bytes from fd %d: ",
+					rcount, pfds[i].fd  );
+				#else
+				DPRINTF(1, "got %d bytes from fd %d, %s: ",
+					rcount, pfds[i].fd, ttyname(pfds[i].fd) );
+				#endif /* __SVR4 */
+
+				RETCALL(write(1, buf, rcount) );
+
+			} /* end while */
+		} /* end if */
+	} /* end for */
+	return 0;
+
+} /* END PROCESSINPUT */
+
+
+
+/******************
+	POLLLOOP
+	takes an aarray of ints
+******************/
+static int
+pollLoop(struct pollfd * pfds, int pfdCount)
+{
+	nfds_t foundCount; /* don't be scared, it's just a uint */
+
+	DPRINTF(1, "starting poll loop with total of %d fd's\n", pfdCount);
+
+	while(shutdownFlag == 0){
+		SYSCALL(foundCount = poll(pfds, pfdCount, INFTIM));
+		assert(foundCount > 0); /* with INFTIM, should neer have 0 */
+
+		processInput(pfds, pfdCount);
+
+	} /* end while */
+
+	return (0);
+	
+}/* END POLLOOP  */
+
+
 
 /******************
 	TWOWAYPOLL
 	point to point data
-	XXX: note this function is plain-ol' broken. DFW: don't fucking work.
 ******************/
 int
 twoWayPoll(int fd1, int fd2)
 {
 	static struct pollfd pfds[3];
 	static int pfdCount = 0; /* used by the newpfd utility function */
-	nfds_t foundCount;
-	char chunk[READBUF];
-	int c;
-	int i;
 
 	SYSCALL(!isatty(fd1));
 	SYSCALL(!isatty(fd2));
@@ -78,7 +141,7 @@ twoWayPoll(int fd1, int fd2)
     newPfd(pfds, &pfdCount, fd1, POLLIN);
     newPfd(pfds, &pfdCount, fd2, POLLIN);
 
-	/* XXX hello? it's all gone */
+	pollLoop(pfds, pfdCount);
 
 	return 0;
 }/* END TWOWAYPOLL */

@@ -38,12 +38,11 @@ linuxGetPty(char ** slaveName)
 	RETCALL( ioctl(masterFd, TIOCGPTN, &slaveNum) );
 
 
-   DPRINTF( 1, "your pty is /dev/pts/%d and the master is on fd %d  \n",
-        slaveNum,  masterFd);
-
 	NULLCALL(*slaveName = (char *)malloc(SLAVELEN));
     snprintf(*slaveName, SLAVELEN, "/dev/pts/%d", slaveNum);
 	
+    DPRINTF(1, "your pty is %s and the master is on fd %d\n",
+        *slaveName, masterFd);
 
     return  masterFd;
 } /* END LINUXGETPTY */
@@ -95,8 +94,7 @@ bsdGetPty(char ** slaveName)
 	NULLCALL(*slaveName = (char *)malloc(SLAVELEN));
     snprintf(*slaveName, SLAVELEN, "/dev/tty%c%c", *ltrp, *nump);
 
-    DPRINTF(1,
-        "yee haw! your pty is %s and the master is %s open on %d\n",
+    DPRINTF(1, "your pty is %s and the master is %s open on fd %d\n",
         *slaveName, ttyname(masterFd), masterFd);
 
     return masterFd;
@@ -108,15 +106,20 @@ bsdGetPty(char ** slaveName)
     takes in: string for term
     returns: fd of master, if good, -1 if no go, -2 if busy
         name of slave pty to open, in input 
+	 TODO: put a proper configure.in test and choose based on that 
 	NOTE: all of these functions malloc *slaveName, you must free
 ***************************/
 int 
 getPty(char ** slaveName )
 {
 
-	/* TODO: put a configure.in test and choose based on that 
-		SYSCALL(ptfd = linuxGetPty(&slaveName));	 */
-	return(bsdGetPty(&slaveName));
+/*
+#ifdef TIOCGPTN
+	return(linuxGetPty(slaveName));	
+#else
+#endif 
+*/
+	return(bsdGetPty(slaveName));
 
 } /* END GETPTY */
 

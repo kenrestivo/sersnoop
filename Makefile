@@ -39,6 +39,8 @@ sersnoop: $(sersnoop_OBJS)
 test: sersnoop
 	./sersnoop
 
+selecttest: sersnoop
+	./sersnoop -s
 
 debug: sersnoop
 	@gdb ./sersnoop
