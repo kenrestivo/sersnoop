@@ -1,7 +1,9 @@
 TODO- serial snooper
 
 ok, go for it: add in the network code! now i have something like net2tty
-	test with the actual camera! this be it... SEP: chotplay
+	test with the actual camera! this be it... 
+		hmm. weirdness.
+			SEP: chotplay
 
 make the debug code optional? so i can run it as a daemon?
 	essentially, make all the display.c shit DPRINTF level 1
@@ -19,6 +21,14 @@ server mode! oh shit, how to do that?
 
 should i be using O_NDELAY on tty when i'm using select/poll?? good idea?
 	STUCK: read up on this
+
+pollloop is still fucked. 
+	seems like poll() returns if an fd closes, but processInput wigs
+		STUCK: read the docs, poll, etc. find out what's supposed to happen
+		create an exception handling routine that removeFd's etc
+	processInput() only does one fd at a time. prolly not good
+		not sure about bcast(), if i need to flush readers b4 writing?
+			STUCK: read docs
 
 ----------------
 BELOW THE LINE

@@ -93,6 +93,7 @@ bcast(char * buf, int len, int fromfd, struct pollfd * pfds, int numfds)
 /************************
 	PROCESSINPUT
 	cycles through the fd's with stuff on 'em, and prints it
+	XXX this only processes ONE fd at a time, the first one to have data.
 	RETURNS:  0 if ok, the fd number if it has closed, and negative number if error
 *************************/
 static int 
@@ -105,8 +106,8 @@ processInput(struct pollfd * pfds, int numFds)
 	for (i = 0; i < numFds; i++){
 		if(pfds[i].revents & POLLIN ){
 			/* i can't while() here, or it all hangs. */
-			if ( (rcount = read(pfds[i].fd, buf, sizeof(buf)) ) >0 ){
-
+			rcount = read(pfds[i].fd, buf, sizeof(buf)) ;
+			if ( rcount > 0 ){
 				/* shout it to all the others */
 				bcast(buf, rcount, pfds[i].fd, pfds, numFds);
 
@@ -115,14 +116,14 @@ processInput(struct pollfd * pfds, int numFds)
 
 			} else if (rcount < 0 ) {
 				perror("read error in poll:processInput\n");
-				return -1;
-			} else {
-				DPRINTF(1, "processInput(): connection closed by peer\n");
+			} else { /* zero */
+				fprintf(stderr,  "processInput(): connection closed by peer\n");
 				return 1;
 			}
 		} /* end if */
 	} /* end for */
 
+	DPRINTF(1, "nobody had data??\n");
 	return(-1);
 
 } /* END PROCESSINPUT */
@@ -147,6 +148,8 @@ pollLoop(struct pollfd * pfds, int pfdCount)
 		}
 		SYSCALL(foundCount = poll(pfds, pfdCount, INFTIM));
 		assert(foundCount > 0); /* with INFTIM, should neer have 0 */
+
+		/* XXX poll returns if a fd closes, and processInput freaks out */
 
 		RETCALL(res = processInput(pfds, pfdCount));
 		if(res > 0){
