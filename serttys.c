@@ -85,8 +85,11 @@ changespeed( int fd, int baud)
 	cfsetospeed(&tio, baud);
 	RETCALL (tcsetattr(fd, TCSANOW, &tio) ) ;
 
-	/* drain all the crap */
-	tcflush(fd,TCIOFLUSH);
+	/* TODO: cfmakeraw() instead of all this shit. 
+		i still need to set baud tho */
+
+	/* discard anything sitting in ingoing our outgoing buffers */
+	RETCALL(tcflush(fd,TCIOFLUSH));
 
 	return(0);
 }/* END CHANGESPEED */

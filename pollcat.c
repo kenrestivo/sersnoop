@@ -116,15 +116,16 @@ processInput(struct pollfd * pfds, int numFds)
 
 			} else if (rcount < 0 ) {
 				perror("read error in poll:processInput\n");
+				return -1;
 			} else { /* zero */
 				fprintf(stderr,  "processInput(): connection closed by peer\n");
-				return 1;
 			}
 		} /* end if */
 	} /* end for */
 
+	/* XXX this is fucked */
 	DPRINTF(1, "nobody had data??\n");
-	return(-1);
+	return(1);
 
 } /* END PROCESSINPUT */
 
@@ -156,7 +157,7 @@ pollLoop(struct pollfd * pfds, int pfdCount)
 			DPRINTF(1, "pollLoop(): connection %s closed on %d\n", 
 					ttyname(res), res);
 			/* XXX shoudl be? removePfd(pfds, &pfdCount, res); */
-			return(-1);
+			return(-1); 
 		}
 
 	} /* end while */
