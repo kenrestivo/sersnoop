@@ -77,7 +77,7 @@ manpage.1: manpage.sgml
 
     <para><command>&dhpackage;</command> is a simple command-line tool for Linux that echoes bytes to and from any
    two serial ports, ptys, or network sockets, and prints all traffic to
-   stdout, in hex and ascii. You can mix and match any combination of serial ports, pty's, or sockets. sersnoop can either listen on sockets, or connect to sockets, or both.
+   stdout, in hex and ascii. It tries to use an xxd-like display format. You can mix and match any combination of serial ports, pty's, or sockets. sersnoop can either listen on sockets, or connect to sockets, or both.
 </para>
 
   </refsect1>

@@ -30,7 +30,7 @@ build: build-stamp
 build-stamp: configure-stamp 
 	dh_testdir
 	$(MAKE)
-	/usr/bin/docbook-to-man debian/sersnoop.sgml > sersnoop.1
+	docbook2man debian/sersnoop.sgml > sersnoop.1
 	touch build-stamp
 
 clean:

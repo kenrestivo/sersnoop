@@ -1,12 +1,5 @@
 TODO- serial snooper
 
-debianize it. don't critizize it.
-	handle the install target
-	fix fucked up things
-	build/test/install
-	commit it!
-	publish it, in various places
-
 add the index.html to this cvs, and generate teh readme automatically
 
 add ssl support. yeah, right.
@@ -346,3 +339,10 @@ asprintf was totally fucked
 	have yet another look at giFT DONE
 	write a man page!
 		doc2man DONE
+	handle the install target DONE
+	fix fucked up things
+	build/test/install
+debianize it. don't critizize it.
+	commit it!
+	publish it, in various places
+

@@ -26,6 +26,7 @@ REL=0.4
 #dirs
 DISTDIR=/mnt/www/restivo/projects/$(PACKAGE)/src
 KENINCL=/mnt/kens/ki/is/c/kenincl
+DESTDIR=/usr/local
 
 #build stuff
 TARGETS= sersnoop
@@ -68,7 +69,6 @@ endif
 
 # 
 
-
 all: $(TARGETS)
 
 clean::
@@ -76,6 +76,9 @@ clean::
 
 sersnoop: $(sersnoop_OBJS) $(ssl_OBJS) $(sersnoop_HEADERS)
 	$(CC) $(CFLAGS) $(LDFLAGS) $(SSLLDFLAGS) -o  $@ $(sersnoop_OBJS) $(ssl_OBJS)
+
+install: $(TARGETS)
+	install -c -m 755 sersnoop $(DESTDIR)/bin
 
 #test targets
 
@@ -123,11 +126,14 @@ dist: sersnoop
 
 distinst: dist
 	mv ../$(PACKAGE)-$(REL).tar.gz $(DISTDIR)
+	debuild
+	mv ../$(PACKAGE)_$(REL)* $(DISTDIR)
 	(cd $(DISTDIR) && \
 			rm -f $(PACKAGE)-current.tar.gz  ; \
-			ln -s $(PACKAGE)-$(REL).tar.gz $(PACKAGE)-current.tar.gz)
+			ln -s $(PACKAGE)-$(REL).tar.gz $(PACKAGE)-current.tar.gz; \
+			rm -f $(PACKAGE)_current_i386.deb  ; \
+			ln -s $(PACKAGE)_$(REL)_i386.deb $(PACKAGE)_current.deb)
 	cp $(KENINCL)/kenmacros.h $(DISTDIR)/
-
 
 #EOF
 
