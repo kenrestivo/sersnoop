@@ -53,8 +53,10 @@ parseDevice(char * path)
 		return opentty(path);
 	} else if ( strncmp(path, "pty", 3) == 0 ){
 		return getPty(ptmx);
-	} else { /* assume network socket */
-		return opensock(path);
+	} else if (strchr(path,':') == NULL){ /* network server */
+		return openServer(path);
+	} else { /* network client */
+		return openSock(path);
 	}
 
 }/* END PARSEDEVICE */
@@ -70,10 +72,11 @@ usage(){
 	fprintf(stderr, "usage: sersnoop \n"
 	"\t-a first device (default /dev/ttyS1:38400)\n"
 	"\t-b second device (default pty)\n"
-	"\t\t devices can be:\n"
-	"\t\t\t'host:port', ipaddr:port' \n"
-	"\t\t\t'/abs/path/to/ttyname:baud, or\n"
-	"\t\t\t'pty' (it'll pick a pty for you)\n"
+	"\t either or both devices can be:\n"
+	"\t\t<host:port> or <ipaddr:port> for client\n"
+	"\t\t<port> for server\n"
+	"\t\t</abs/path/to/ttyname:baud>, for tty or\n"
+	"\t\t<pty> (it'll pick a pty for you)\n"
 	"\t-d debug level\n"
 	"\t-p use ptmx\n"
 	"\t-s try it with select not poll (for debugging)\n"

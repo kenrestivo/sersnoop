@@ -41,15 +41,70 @@ extern int h_errno;
 
 
 /******************
+	OPENSERVER
+	lifted from sockettest
+******************/
+int
+openServer(char * path)
+{
+    struct sockaddr_in recvSa;   
+    struct sockaddr_in peerSa;   
+	struct in_addr recvIa;
+	int port = 0;
+	int sd = -1;
+	int ad = -1;
+	socklen_t saLen = sizeof(recvSa);
+	socklen_t peerLen = sizeof(peerSa);
+
+	/* get numeric port and error czech */
+	port = strtoul(path, NULL, 0);
+	if(port <10 || port > 65535){
+		fprintf(stderr, "%d is a bad port number\n", port);
+		return -1;
+	}
+
+	DPRINTF(1, "openServer(): opening socket listener on %d\n", port);
+
+	/* sigh. */
+    memset(&recvSa, 0, sizeof(recvSa)); 
+    memset(&peerSa, 0, sizeof(peerSa)); 
+    memset(&recvIa, 0, sizeof(recvIa)); 
+
+	/* will i need to use the inet_addr macros? */
+	recvIa.s_addr = INADDR_ANY;
+    recvSa.sin_family = PF_INET;
+    recvSa.sin_addr = recvIa;
+	recvSa.sin_port = htons(port);
+	
+	/* bind the port and set up an accept loop */
+	SYSCALL(sd = socket(PF_INET, SOCK_STREAM, 0)) ;
+	SYSCALL(bind(sd, (struct sockaddr *)&recvSa, saLen) );
+	SYSCALL(listen(sd, MAXTRIES));
+
+	/* TODO: if i want the program to stay alive if connections die, 
+			then this needs to go in the poll loop. non-trivial change!  */
+	SYSCALL((ad = accept(sd, (struct sockaddr *)&recvSa, &saLen)));
+
+	SYSCALL(getpeername(ad, &peerSa, &peerLen));
+	DPRINTF(1, "got connection from %s on %d\n", 
+		inet_ntoa(peerSa.sin_addr.s_addr), ntohs(peerSa.sin_port));
+
+	/* TODO: rip the gethostbyaddr() stuff from my old gethostfun program  */
+
+	return ad;
+}/* END OPENSERVER */
+
+
+
+/******************
 	OPENSOCK
 	lifted from library program
 ******************/
 int 
-opensock(char * path)
+openSock(char * path)
 {
     /* this is stupid. do with structs, as in the other one */
     struct sockaddr_in destSa;   
-    char myname[MAXBUF];
 	struct hostent * destHe = NULL;
 	extern int h_errno;
 	struct in_addr destAddr ;
@@ -63,11 +118,8 @@ opensock(char * path)
 	RETCALL( destPort = splitColon(path, &destHost) );
 
 	/* zero out bits */
-    memset(&destSa, 0, sizeof(struct sockaddr_in)); 
+    memset(&destSa, 0, sizeof(destSa)); 
     memset(&destAddr, 0, sizeof(struct in_addr)); 
-
-	/* not really needed for a client */
-	RETCALL(gethostname(myname, (size_t)sizeof(myname)));
 
 	/* resolve the address of the machine i'm trying to reach */
 	assert(destHost != NULL && destPort >0 );
@@ -110,16 +162,16 @@ opensock(char * path)
 		(struct sockaddr *)&destSa, 
 		sizeof(struct sockaddr_in)) < 0 )
 	{
-		fprintf(stderr, "can't connect to %s on %d from %s: %s\n", 
-			destHost, destPort, myname, strerror(errno));
+		fprintf(stderr, "can't connect to %s on %d: %s\n", 
+			destHost, destPort, strerror(errno));
 		if (i++ > MAXTRIES){
 			fprintf(stderr, "after %d tries, gave up. argh.\n", i);
 			return -1;
 		}
 		sleep(2);
 	}
-	DPRINTF(1, "now connected to %s on %d from %s\n", 
-		destHost, destPort, myname);
+	DPRINTF(1, "now connected to %s on %d\n", 
+		destHost, destPort);
 
 #ifdef IPPROTO_TCP
 	RETCALL(setsockopt(	sd,            /* socket affected */

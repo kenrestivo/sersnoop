@@ -51,6 +51,9 @@ testHandler(int sig)
             fprintf(stderr, "testhandler: hup!\n");
             shutdownFlag = 1;
             break;
+        case SIGPIPE:
+            fprintf(stderr, "broken pipe. someone's bong shut down.\n");
+            break;
         default:
             break;
     }
@@ -74,8 +77,8 @@ signalSetup(void)
     sigset_t set;
     sigset_t saveSet;
     int i;
-    /* TODO: make this a va_arglist */
-    int sigs[] = {SIGINT, SIGHUP, SIGTERM};
+    /* TODO: make this a va_arglist so someone can pass it in! */
+    int sigs[] = {SIGINT, SIGHUP, SIGTERM, SIGPIPE};
 
     /* block all sigs so we're not disturbed while we're setting this up */
     SYSCALL(sigfillset(&set) );
