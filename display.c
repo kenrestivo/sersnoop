@@ -28,7 +28,7 @@
 #include <kenmacros.h>
 
 
-#define MAXCOL 15
+#define MAXCOL 80
 
 
 /******************
@@ -64,20 +64,50 @@ stripUnreadables(char * dirty, char * clean, int len)
 static void
 hexDump(unsigned char * buf, int len)
 {
-	unsigned char * p = buf;
-
-	if(len > MAXCOL){
-		printf("\n\t\t");
+	char posfmt[]= "\n    0x%0.4x: ";
+	char bytefmt[] = "%0.2x%0.2x ";
+	int col = 0; /* position on the screen */
+	int pos = 0; /* position in the buffer */
+	
+	while(pos < len){
+		if(col == 0 ||  col % MAXCOL == 0 ){
+				/* print the header */
+				printf(posfmt, pos);
+				/* fmt has \n in it, so we are resetting the column = here. */
+				col = 12; /* 4 space, 2 0x, 4 digits , 1 colon, 1 space*/
+		}
+	
+		/* print 2 bytes */
+		printf(bytefmt, buf[pos++], buf[pos++]);
+		col += 5; /* 4 chars for 2 bytes, plus space */
+		DPRINTF(1, "pos = %d, col = %d,  col %% maxcol = %d\n", 
+					pos, col, col % MAXCOL);
 	}
 
-	while((p - buf) < len){
-		printf("%02x ", *p);
-		p++;
-	}
-
-	putchar('\n');
+	putchar('\n'); /* XXX redundant? */
 
 }/* END HEXDUMP */
+
+
+
+/******************
+ * DUMPTEST
+ * just exercises hexDump() 
+ * ******************/
+void
+dumpTest(int which)
+{
+	char testbuf0[256] ;
+	int i;
+
+	for (i = 0; i< 256; i++){
+		testbuf0[i] = i;
+	}
+
+	DPRINTF(1, "here is a test buffer displayed:\n");
+	hexDump(testbuf0, sizeof(testbuf0));
+
+}/* END DUMPTEST */
 
 
 
@@ -106,7 +136,7 @@ display(int sourcefd, char * buf, int len)
 		total = 0;
 	}
 
-	printf("%d:%d %s: (%d) <%.*s> ", 
+	printf("%d:%d %s: (%d) <%.*s>\n", 
 		(int)tv.tv_sec, (int)tv.tv_usec, 
 		ttyname(sourcefd), len,  len, clean);
 

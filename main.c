@@ -82,6 +82,7 @@ usage(){
 	"\t-p use ptmx\n"
 	"\t-s try it with select not poll (for debugging)\n"
 	"\t-h this help (and version number)\n"
+	"\t-D just test out the hexdump display format (for debug)\n"
 	);
 	exit(1);
 
@@ -103,9 +104,17 @@ main(int argc, char ** argv)
 
 
 	/* opts and such */
-	while( (c= getopt(argc, argv, "pd:a:b:s")) != -1) {
+	while( (c= getopt(argc, argv, "pd:a:b:sD")) != -1) {
 		switch(c){
-			case 'p':
+			case 'd': /* first thing i want to know about */
+				debug = atoi(optarg);
+				break;
+			case 'D': /* up top so it doesn't bother checking other opts */
+				/* TODO: eventually let the user choose */
+				dumpTest(0);
+				exit(0);
+				break;
+			case 'p': /* order significant, before parseDevice opens the pty */
 				ptmx = 1;
 				break;
 			case 'a':
@@ -113,9 +122,6 @@ main(int argc, char ** argv)
 				break;
 			case 'b':
 				RETCALL(devBfd = parseDevice(optarg));
-				break;
-			case 'd':
-				debug = atoi(optarg);
 				break;
 			case 's':
 				sel= 1;

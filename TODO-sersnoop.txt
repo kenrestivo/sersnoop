@@ -1,6 +1,12 @@
 TODO- serial snooper
 
-the decode display is butt-ugly. works fine for short packets but for long ones it's unreadable. i need to make it more xxd-like
+the decode display is butt-ugly. works fine for short packets but for long ones it's unreadable. 
+	d-oh. my % formula is wrong
+		STUCK: look it up somewhere, i've doen it before
+			kcurses? sim?
+	does the column width show up in any envs?
+		nope, but you can ioctl or cfget for it!!!
+	
 
 make the network socket code portable
 
@@ -164,3 +170,6 @@ package up as a tarball and post it
 server mode! oh shit, bind(), listen(), accept() etc.
 	DONE! and it works!
 
+	i need to make it more xxd-like
+		SOLUTION: simple. just assume 80 col for now, then % == 0 test
+			i know i've done this before

@@ -59,6 +59,9 @@ nettest: sersnoop
 servtest: sersnoop
 	./sersnoop -a ts:23 -b 4242
 
+dumptest: sersnoop
+	./sersnoop -D
+
 
 selecttest: sersnoop
 	./sersnoop -s -a/dev/ttyS1:38400 -b pty

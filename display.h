@@ -26,6 +26,9 @@
 int
 display(int sourcefd, char * buf, int len);
 
+void
+dumpTest(int which);
+
 
 #endif /* DISPLAY_H */
 
