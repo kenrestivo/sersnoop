@@ -155,7 +155,8 @@ manpage.1: manpage.sgml
          <para>Either or both devices can be:</para>
                 <para>(host:port) or (ipaddr:port) for client (or (host:port)S for SSL-based client)</para>
                 <para>(port) for server (or (port)S for SSL-based server</para>
-                <para>(/abs/path/to/ttyname:baud>, for tty or (pty) (it'll pick a pty for you)</para>
+                <para>(/path/to/ttyname:baud>, for tty or </para>
+				<para>(pty) (it'll pick a pty for you)</para>
 
   </refsect1>
 
