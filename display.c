@@ -110,6 +110,7 @@ hexDump(unsigned char * buf, int len)
 	
 	while(pos < len){
 		/* XXX i have remainder issues here */
+		linelen = len-pos < linelen ? len-pos : linelen;
 		pos = printLine(&buf[pos], linelen, pos);
 	} /* end while */
 
