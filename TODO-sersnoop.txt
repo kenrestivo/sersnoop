@@ -16,9 +16,6 @@ make the debug code optional? so i can run it as a daemon?
 	try it with sendfile? is it any faster/more responsive? if i don't need debug.
 
 fancy formatting. 
-	right-justify the ascii on short packets
-		non-trivial. would require keeping count of cols pooted out.
-			i.e. with each byte sent.. hmm. maybe that's not impossible...
 	breaks after 8 bytes, in ascii. yes.
 		non-trivial. i'd have to do it in stripUnreadables, AND make sure there's extra bytes to cover it, meaning malloc, it's gettin ugly
 
@@ -230,3 +227,7 @@ should i be using O_NDELAY on tty when i'm using select/poll?? good idea?
 	 read up on this
 		SOLUTION: i'm not using it, since i'm polling instead.
 
+	right-justify the ascii on short packets
+		non-trivial. would require keeping count of cols pooted out.
+			i.e. with each byte sent.. hmm. maybe that's not impossible...
+		DONE! wasn't too bad, but it's still a little goofy

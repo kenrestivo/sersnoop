@@ -30,6 +30,7 @@
 
 #define MAXBYTESLINE  16
 #define MAXCOLS 80
+#define MAXASCII 22
 
 
 /******************
@@ -72,22 +73,29 @@ stripUnreadables(char * dirty, char * clean, int len)
 int
 printLine(unsigned char * linebuf, int linelen, int mainpos)
 {
+	#define POSFMTLEN 12
 	char posfmt[]= "\n    0x%0.4x: "; /* maximum 65535 before rolling over */
+	#define BYTEFMTLEN 2
 	char bytefmt[] = "%02x";
 	char * cleanbuf = NULL;
 	int i = 0;
+	int col = 0;
 
 	/* the header */
 	printf(posfmt, mainpos);
+	col = POSFMTLEN; /* reset col here, there's a \n in posfmt */
 
 	/* the bytes */
 	for(i = 0; i < linelen; i++){
 		printf(bytefmt, linebuf[i]);
+		col += BYTEFMTLEN;
 		if(i % 2 ){
 			putchar(' ');
+			col++;
 		}
 		if(i % 8  == 7){ /* goofy, but it solves the position 0 problem */
 			putchar(' ');
+			col++;
 		}
 		DPRINTF(2, "mainpos = %d, bytesline = %d\n", 
 					mainpos, i);
@@ -95,10 +103,22 @@ printLine(unsigned char * linebuf, int linelen, int mainpos)
 	}
 
 	/* the ascii */
-	/* XXX oops. with short packets, my column justtification is fucked */
 	NULLCALL(cleanbuf = (char *)malloc(linelen));
 	stripUnreadables(linebuf, cleanbuf, linelen);
-	printf(" | %.*s", linelen, cleanbuf);
+	#define ASCII_OHEAD 2
+	DPRINTF(2, "total %d padding: col %d, linelen %d\n",
+			MAXCOLS - MAXASCII - col - ASCII_OHEAD , 
+			col, linelen);
+
+	/* this whole MAXCOLS/MAXASCII is goofy. 
+	 * i eventually want to calculate it based on terminal width. 
+	 * but for now, hardcoding it is fine. */
+	printf("%-*s| %.*s", 
+			MAXCOLS - MAXASCII - col - ASCII_OHEAD , 
+			" ",
+			linelen, 
+			cleanbuf
+	);
 
 	free(cleanbuf);
 

@@ -87,6 +87,8 @@ openServer(char * path)
 	SYSCALL(bind(sd, (struct sockaddr *)&recvSa, saLen) );
 	SYSCALL(listen(sd, MAXTRIES));
 
+	/* TODO: setsockopt(SO_REUSEADDR, etc) */
+	
 	/* TODO: if i want the program to stay alive if connections die, 
 			then this needs to go in the poll loop. non-trivial change!  */
 	SYSCALL((ad = accept(sd, (struct sockaddr *)&recvSa, &saLen)));
@@ -195,7 +197,7 @@ openSock(char * path)
 #ifdef IPPROTO_TCP
 	NRETCALL(setsockopt(	sd,            /* socket affected */
 					IPPROTO_TCP,     /* set option at TCP level */
-					TCP_NODELAY,     /* name of option */
+					TCP_NODELAY ,  /* name of option */
 					(char *) &flag,  /* the cast is historical
 											cruft */
 					sizeof(int))    /* length of option value */
