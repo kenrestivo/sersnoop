@@ -146,7 +146,8 @@ main(int argc, char ** argv)
 	/* oh, why not */
 	signalSetup();
 
-	/* and now the loop de loop */
+	/* and now the loop de loop 
+	 * TODO: be ready for multi-fd's: not twoWay but an array instead */
 	rv = sel ? twoWaySelect(gfds) : twoWayPoll(gfds); 
 	
 	/* tidy up */

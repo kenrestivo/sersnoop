@@ -92,18 +92,11 @@ changespeed( int fd, int baud)
 
 	RETCALL(tcgetattr(fd, &tio) );
 
-	tio.c_iflag = 0;
-	tio.c_oflag = 0;
-	tio.c_cflag = CS8 | CREAD | CLOCAL  ; /* 8bit non parity stop 1 */
-	tio.c_lflag = 0;
-	tio.c_cc[VMIN] = 1;
-	tio.c_cc[VTIME] = 5 ;
+	cfmakeraw(&tio);
+
 	cfsetispeed(&tio, baud);
 	cfsetospeed(&tio, baud);
 	RETCALL (tcsetattr(fd, TCSANOW, &tio) ) ;
-
-	/* TODO: cfmakeraw() instead of all this shit. 
-		i still need to set baud tho */
 
 	/* discard anything sitting in ingoing our outgoing buffers */
 	RETCALL(tcflush(fd,TCIOFLUSH));
@@ -135,7 +128,6 @@ opentty(char *path )
 	/* decode baud */
 	NRETCALL(baudcode = decodeBaud(humanbaud));
 	
-
 	DPRINTF(1, "opentty(): opening %s with baudcode 0x%X\n", mytty, baudcode);
 
 	/* i'm using select/poll, so no NDELAY */

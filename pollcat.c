@@ -111,7 +111,6 @@ bcast(char * buf, int len, int fromfd, struct pollfd * pfds, int numfds)
 /************************
 	PROCESSINPUT
 	cycles through the fd's with stuff on 'em, and prints it
-	XXX this only processes ONE fd at a time, the first one to have data.
 	RETURNS:  0 if ok, the fd number if it has closed, and negative number if error
 *************************/
 static int 
@@ -120,6 +119,7 @@ processInput(struct pollfd * pfds, int numFds)
 	char buf[READBUF];
 	int rcount = 0;
 	int i = 0;
+	int whohad = 0; /* for debugging purposes */
 
 	for (i = 0; i < numFds; i++){
 		if(pfds[i].fd <0 ){
@@ -133,7 +133,8 @@ processInput(struct pollfd * pfds, int numFds)
 				bcast(buf, rcount, pfds[i].fd, pfds, numFds);
 
 				RETCALL(display( pfds[i].fd, buf, rcount) );
-				return 0;
+				whohad++;
+				continue;
 
 			} else if (rcount < 0 ) {
 				perror("read error in poll:processInput\n");
@@ -141,14 +142,19 @@ processInput(struct pollfd * pfds, int numFds)
 			} else { /* zero, read over, connection closed  */
 				DPRINTF(1, "processInput(): connection %s closed on %d\n", 
 						lookupName(pfds[i].fd), pfds[i].fd);
+				/* XXX we blast outta here, whatever may have been 
+				 * 		waiting on other fd's is lost. */
 				return pfds[i].fd;
 			}
 		} /* end if */
 	} /* end for */
 
-	/* XXX this is fucked */
-	DPRINTF(2, "reading from %d (%s): nobody had data??\n", 
-		pfds[i].fd, lookupName(pfds[i].fd));
+	/* some debug  */
+	if(whohad > 1){
+		DPRINTF(2, "processInput(): we handled %d fd's\n", whohad);
+	} else if (whohad < 1) {
+		DPRINTF(2, "processInput(): nobody had data??\n");
+	}
 	return(0);
 
 } /* END PROCESSINPUT */
@@ -177,7 +183,6 @@ pollLoop(struct pollfd * pfds, int pfdCount)
 
 		RETCALL(res = processInput(pfds, pfdCount));
 		if(res != 0){
-			/* XXX shoudl be? removePfd(pfds, &pfdCount, res); */
 			DPRINTF(1, "pollLoop(): got exit code of %d from processInput()\n",
 				res);
 			removePfd(pfds, &pfdCount, res); 
@@ -200,7 +205,8 @@ pollLoop(struct pollfd * pfds, int pfdCount)
 int
 twoWayPoll(struct fdstruct ** lfds)
 {
-	/* TODO: this is duplication. create a (void *) in fdstruct, and use it here */
+	/* TODO: this is duplication. 
+	 * 		create a (void *) in fdstruct, and use it here */
 	static struct pollfd pfds[3];
 	static int pfdCount = 0; /* used by the newpfd utility function */
 	struct fdstruct ** p;

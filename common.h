@@ -27,6 +27,7 @@
 struct fdstruct {
 		int fd; /* the fd that has been open */
 		char * name; /* for the display function to use */
+		/* TODO: add ssl-related shit */
 };
 
 /* FUNCS */

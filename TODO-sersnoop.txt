@@ -2,8 +2,13 @@ TODO- serial snooper
 
 add ssl support. yeah.
 	some way to specify it on the command line
-	no big certificate checking
-	simple read-write. look in jabberd, gabber, stunnel, etc.
+		an "S" flag? this is getting goofy.
+	an sslsock file for opening the sockets
+		no big certificate checking
+	add the SSL structs to the fdstruct object
+	hellacious hacks to pollcat.c 
+		read-write. look in jabberd, gabber, stunnel, etc.
+		somehow conditionalize it
 	some kind of conditional compliation?
 
 add logging (well, duh, why didn't i think of this?)
@@ -37,6 +42,10 @@ poll still returns with -1 data, if my pty went away
 	do i need to check write before writing, in bcast?
 		non-trivial change. would need to put write into the poll loop
 
+if an fd goes away, in server mode, 
+	do i already re-listen it, and re-accept it
+	but, i need to re-add it to the pollcat shit.
+
 SO_REUSEADDR in socket server
 
 ----------------
@@ -46,6 +55,7 @@ possibly blow off all this command-line crap and use a conf file instead
 	use the gtk file-parsing library . look up the name of it in my c/notes/gtk
 
 cfmakeraw() instead of all that manual flag-setting
+	didn't i do this?
 
 	and when in network/daemon mode, connect only when pty opens
 		could require significant reshuffling. opens are in main right now... 
@@ -67,8 +77,6 @@ expand to make it handle more than two
 	change the command line parsing instead of -a -b, just put them as optind's
 		i.e after all the dash options are done!
 	either create multi-versions (array?) of the twoxxx functions, or expose them
-	fix the polLoop so that it handles a read returning 0 by removing the fd!
-		perhaps it needs to remvoe the OPPOSITE side's fd? why is this broken?
 
 create a DIEUSAGE macro?
 
@@ -79,6 +87,9 @@ add a void * to the fdstruct, and use it for newPfd(), pollLoop(), et al
 ----------------
 NOWHERE
 
+	fix the polLoop so that it handles a read returning 0 by removing the fd!
+		perhaps it needs to remvoe the OPPOSITE side's fd? why is this broken?
+			didn't i already fix this?
 			or just be lazy and stick it in common.h?
 			NOPE. 
 	hmm. i'm gonna have to insert this into the poll loop. dammit.

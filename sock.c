@@ -195,7 +195,7 @@ openSock(char * path)
 		destHost, destPort);
 
 #ifdef IPPROTO_TCP
-	NRETCALL(setsockopt(	sd,            /* socket affected */
+	NRETCALL(setsockopt(sd,            /* socket affected */
 					IPPROTO_TCP,     /* set option at TCP level */
 					TCP_NODELAY ,  /* name of option */
 					(char *) &flag,  /* the cast is historical
