@@ -55,6 +55,7 @@ openServer(char * path)
 	int port = 0;
 	int sd = -1;
 	int ad = -1;
+	int x; /* used by setsockopt */
 	socklen_t saLen = sizeof(recvSa);
 	socklen_t peerLen = sizeof(peerSa);
 	char * pn = NULL;
@@ -87,8 +88,9 @@ openServer(char * path)
 	SYSCALL(bind(sd, (struct sockaddr *)&recvSa, saLen) );
 	SYSCALL(listen(sd, MAXTRIES));
 
-	/* TODO: setsockopt(SO_REUSEADDR, etc) */
-	
+	x = 1; /* set the flag to TRUE */
+	SYSCALL(setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &x, sizeof(x)));
+
 	/* TODO: if i want the program to stay alive if connections die, 
 			then this needs to go in the poll loop. non-trivial change!  */
 	SYSCALL((ad = accept(sd, (struct sockaddr *)&recvSa, &saLen)));
