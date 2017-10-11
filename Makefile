@@ -26,7 +26,7 @@ REL=0.4
 #dirs
 WEBDIR=/mnt/www/restivo/projects/$(PACKAGE)
 DISTDIR=$(WEBDIR)/src
-KENINCL=/mnt/kens/ki/is/c/kenincl
+KENINCL=../kenincl
 DESTDIR=/usr/local
 
 #build stuff
