@@ -1,0 +1,74 @@
+                                    sersnoop
+
+what?
+
+   a simple command-line tool for linux that echoes bytes to and from any
+   two serial ports, ptys, or network sockets, and prints all traffic to
+   stdout, in hex and ascii.
+
+why?
+
+   i needed a tool to redirect programs that only understand serial ports
+   (or pty's) to communicate over the network instead (to a terminal
+   server). then i discovered bugs in the serial communications. i needed
+   to debug what was going on over the serial port, using a pty.
+   therefore, i needed a way to display hex dumps, and also to optionally
+   connect the serial port to a pty and/or network socket. and it just
+   kind of went from there...
+
+status
+
+     alpha. it works swimmingly well on linux, but needs cleanups and
+   portability. [screenshot.png]
+
+  to install (binary, debian):
+
+     get [1]the latest x86 .deb file and dpkg -i the thing.
+
+  to install (from source):
+
+     you'll need linux. the code uses non-portable linux-isms in the
+   network socket code. this is fixable, but i haven't done it yet. for
+   now, it's a penguin-only thing.
+
+     get the [2]source and untar it.
+
+     get my [3]utility header file and put it either in the source tree or
+   somewhere else in your include path
+
+     type "make". hopefully it will build for you ;-)
+
+     "./sersnoop -h" will get you the help. you can specify two fd's to
+   listen to: -a and -b. either or both of these can be a network socket,
+   a physical tty, or a virtual pty.
+
+     or, on debian systems, to build from source, you can grab the
+   [4]source package files and build from them.
+
+  bugs
+
+     it only works on linux
+
+  to do
+
+     daemon mode without all the byte-decode display output
+
+     make the network socket code portable
+
+     autoconf
+
+     re-accept() a socket after it dies. this may require callbacks or
+   other goofy things.
+
+     get the debian source package squared away, it's missing the header
+
+  licensing
+
+   GPL.
+
+References
+
+   1. file://localhost/home/localkens/cstuff/sersnoop/src/sersnoop_current_i386.deb
+   2. file://localhost/home/localkens/cstuff/sersnoop/src/sersnoop-current.tar.gz
+   3. file://localhost/home/localkens/cstuff/sersnoop/src/kenmacros.h
+   4. file://localhost/home/localkens/cstuff/sersnoop/src
